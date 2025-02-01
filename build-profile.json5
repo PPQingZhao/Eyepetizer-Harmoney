@@ -51,7 +51,19 @@
     },
     {
       "name": "home",
-      "srcPath": "./fetures/home",
+      "srcPath": "./features/home"
+    },
+    {
+      "name": "square",
+      "srcPath": "./features/square"
+    },
+    {
+      "name": "find",
+      "srcPath": "./features/find"
+    },
+    {
+      "name": "mine",
+      "srcPath": "./features/mine",
     }
   ]
 }
