@@ -1,8 +1,8 @@
 {
   "module": {
-    "name": "square",
+    "name": "user",
     "type": "har",
-    "routerMap": '$profile:route_map',
+    "routerMap": "$profile:route_map",
     "deviceTypes": [
       "default",
       "tablet",

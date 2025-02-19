@@ -38,8 +38,8 @@
       ]
     },
     {
-      "name": "common",
-      "srcPath": "./common",
+      "name": "base",
+      "srcPath": "./commons/base",
       "targets": [
         {
           "name": "default",
@@ -64,6 +64,10 @@
     {
       "name": "mine",
       "srcPath": "./features/mine",
+    },
+    {
+      "name": "user",
+      "srcPath": "./features/user",
     }
   ]
 }

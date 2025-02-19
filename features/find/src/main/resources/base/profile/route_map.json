@@ -1,0 +1,12 @@
+{
+  "routerMap": [
+    {
+      "name": "FindPage",
+      "pageSourceFile": "src/main/ets/pages/FindPage.ets",
+      "buildFunction": "FindPageBuilder",
+      "data": {
+        "description": "this is FindPage"
+      }
+    }
+  ]
+}

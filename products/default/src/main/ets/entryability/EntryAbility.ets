@@ -1,16 +1,14 @@
-import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { UIAbility } from '@kit.AbilityKit';
+
+
+export class WindowStorage {
+  static readonly PROP_STATUSBAR_HEIGHT: string = "_StatusBarHeight"
+  static readonly PROP_NAVIGATION_HEIGHT: string = "_NavigationHeight"
+}
 
 export default class EntryAbility extends UIAbility {
-  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
-  }
-
-  onDestroy(): void {
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onDestroy');
-  }
-
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
@@ -37,31 +35,16 @@ export default class EntryAbility extends UIAbility {
       windowClazz.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR).bottomRect.height
 
     // 保存
-    AppStorage.setOrCreate('statusHeight', statusHeight)
-    AppStorage.setOrCreate('navigationHeight', navigationHeight)
+    AppStorage.setOrCreate(WindowStorage.PROP_STATUSBAR_HEIGHT, statusHeight)
+    AppStorage.setOrCreate(WindowStorage.PROP_NAVIGATION_HEIGHT, navigationHeight)
 
     // 注册监听函数，动态获取避让区域数据
     windowClazz.on('avoidAreaChange', (data) => {
       if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
-        AppStorage.setOrCreate('statusHeight', data.area.topRect.height)
+        AppStorage.setOrCreate(WindowStorage.PROP_STATUSBAR_HEIGHT, data.area.topRect.height)
       } else if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
-        AppStorage.setOrCreate('navigationHeight', data.area.bottomRect.height)
+        AppStorage.setOrCreate(WindowStorage.PROP_NAVIGATION_HEIGHT, data.area.bottomRect.height)
       }
     })
-  }
-
-  onWindowStageDestroy(): void {
-    // Main window is destroyed, release UI related resources
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
-  }
-
-  onForeground(): void {
-    // Ability has brought to foreground
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onForeground');
-  }
-
-  onBackground(): void {
-    // Ability has back to background
-    hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onBackground');
   }
 }

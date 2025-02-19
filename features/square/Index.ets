@@ -1,1 +1,1 @@
-export { SquarePage } from './src/main/ets/components/SquarePage'
+export { SquarePage } from './src/main/ets/pages/SquarePage'

@@ -1,0 +1,12 @@
+{
+  "routerMap": [
+    {
+      "name": "SquarePage",
+      "pageSourceFile": "src/main/ets/pages/SquarePage.ets",
+      "buildFunction": "SquarePageBuilder",
+      "data": {
+        "description": "this is SquarePage"
+      }
+    }
+  ]
+}

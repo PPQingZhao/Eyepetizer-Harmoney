@@ -1,0 +1,12 @@
+{
+  "routerMap": [
+    {
+      "name": "MinePage",
+      "pageSourceFile": "src/main/ets/pages/MinePage.ets",
+      "buildFunction": "MinePageBuilder",
+      "data": {
+        "description": "this is MinePage"
+      }
+    }
+  ]
+}
