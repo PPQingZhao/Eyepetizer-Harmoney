@@ -4,9 +4,9 @@ export function SquarePageBuilder(name: String, param: Object) {
   SquarePage()
 }
 
-@Component
+@ComponentV2
 export struct SquarePage {
-  @State message: string = 'Square';
+  @Local message: string = 'Square';
 
   build() {
     NavDestination() {

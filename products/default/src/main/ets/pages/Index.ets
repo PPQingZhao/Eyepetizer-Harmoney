@@ -1,7 +1,7 @@
 import { NavContentView } from '../views/NavContentView'
 
 @Entry
-@Component
+@ComponentV2
 struct Index {
   mNavPathStack: NavPathStack = new NavPathStack()
 

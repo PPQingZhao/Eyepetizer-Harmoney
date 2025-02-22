@@ -1,8 +1,11 @@
-@Component
+import { AppStorageV2, NavPushPathHelper } from '@kit.ArkUI'
+import { Find, Home, WindowArea } from 'base'
+
+@ComponentV2
 export struct NavContentView {
-  @StorageProp("_NavigationHeight")
-  navigationHeight: number = 0
+  @Local windowArea: WindowArea = AppStorageV2.connect<WindowArea>(WindowArea, () => new WindowArea())!;
   mNavPathStack: NavPathStack = new NavPathStack()
+  mNavPushPathHelper: NavPushPathHelper = new NavPushPathHelper(this.mNavPathStack)
 
   @Builder
   tabBuilder(content: string | Resource,
@@ -23,10 +26,10 @@ export struct NavContentView {
         .hideNavBar(true)
         .layoutWeight(8)
         .onAppear(() => {
-          // this.mNavPathStack.pushPathByName('HomePage', null)
-          // this.mNavPathStack.pushPathByName('FindPage', null)
-          // this.mNavPathStack.pushPathByName('SquarePage', null)
-          this.mNavPathStack.pushPathByName('MinePage', null)
+          this.mNavPushPathHelper.pushPath(Home.moduleName, { name: Home.HomePage })
+          // this.mNavPushPathHelper.pushPath(Square.moduleName, { name: Square.SquarePage })
+          // this.mNavPushPathHelper.pushPath(User.moduleName, { name: User.MinePage })
+          // this.mNavPushPathHelper.pushPath(Find.moduleName, { name: Find.FindPage })
         })
 
       // toolbar
@@ -40,7 +43,7 @@ export struct NavContentView {
       .justifyContent(FlexAlign.SpaceAround)
       .backgroundColor(Color.Blue)
       .layoutWeight(1)
-      .padding({ 'bottom': px2vp(this.navigationHeight) })
+      .padding({ 'bottom': px2vp(this.windowArea.navigationHeight) })
     }.backgroundColor(Color.Red)
   }
 }

@@ -9,6 +9,6 @@
     "home": "file:../../features/home",
     "find": "file:../../features/find",
     "square": "file:../../features/square",
-    "user": "file:../../features/user",
+    "user": "file:../../features/user"
   }
 }

@@ -1,8 +1,9 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { window } from '@kit.ArkUI';
+import { AppStorageV2, window } from '@kit.ArkUI';
+import { WindowArea } from '../utils/Window';
 
-export class BaseEntryAbility extends UIAbility {
+export default class BaseEntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
   }
@@ -26,15 +27,16 @@ export class BaseEntryAbility extends UIAbility {
       windowClazz.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR).bottomRect.height
 
     // 保存
-    // AppStorage.setOrCreate(WindowStorage.PROP_STATUSBAR_HEIGHT, statusHeight)
-    // AppStorage.setOrCreate(WindowStorage.PROP_NAVIGATION_HEIGHT, navigationHeight)
+    let windowArea: WindowArea = AppStorageV2.connect(WindowArea, () => new WindowArea())!
+    windowArea.statusBarHeight = statusHeight
+    windowArea.navigationHeight = navigationHeight
 
     // 注册监听函数，动态获取避让区域数据
     windowClazz.on('avoidAreaChange', (data) => {
       if (data.type == window.AvoidAreaType.TYPE_SYSTEM) {
-        // AppStorage.setOrCreate(WindowStorage.PROP_STATUSBAR_HEIGHT, data.area.topRect.height)
+        windowArea.statusBarHeight = statusHeight
       } else if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
-        // AppStorage.setOrCreate(WindowStorage.PROP_NAVIGATION_HEIGHT, data.area.bottomRect.height)
+        windowArea.navigationHeight = navigationHeight
       }
     })
   }

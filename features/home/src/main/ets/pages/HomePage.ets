@@ -1,20 +1,22 @@
+import { WindowArea } from "base/src/main/ets/utils/Window";
+import { AppStorageV2 } from "@kit.ArkUI";
+
 @Builder
 export function HomePageBuilder(name: String, param: Object) {
   HomePage()
 }
 
 @Preview
-@Component
+@ComponentV2
 export struct HomePage {
-  @StorageProp("_StatusBarHeight")
-  statusbarHeight: number = 0
-  @State message: string = 'Home';
+  @Local windowArea: WindowArea = AppStorageV2.connect(WindowArea, () => new WindowArea())!
+  @Local message: string = 'Home';
   mNavPathStack: NavPathStack = new NavPathStack()
 
   build() {
     NavDestination() {
       Stack() {
-        Text(this.message + "  " + this.statusbarHeight)
+        Text(this.message + "  " + this.windowArea.statusBarHeight)
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
       }.width('100%')

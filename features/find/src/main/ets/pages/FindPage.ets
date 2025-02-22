@@ -3,9 +3,9 @@ export function FindPageBuilder(name: String, param: Object) {
   FindPage()
 }
 
-@Component
+@ComponentV2
 export struct FindPage {
-  @State message: string = 'Find';
+  @Local message: string = 'Find';
 
   build() {
     NavDestination() {

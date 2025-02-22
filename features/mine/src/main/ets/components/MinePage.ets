@@ -1,6 +1,6 @@
-@Component
+@ComponentV2
 export struct MinePage {
-  @State message: string = 'mine';
+  @Local message: string = 'mine';
 
   build() {
     Row() {
