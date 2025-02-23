@@ -1,7 +1,7 @@
 import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppStorageV2, window } from '@kit.ArkUI';
-import { WindowArea } from '../utils/Window';
+import { getWindowAreaByAppStorage, WindowArea } from '../utils/Window';
 
 export default class BaseEntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -27,7 +27,7 @@ export default class BaseEntryAbility extends UIAbility {
       windowClazz.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR).bottomRect.height
 
     // 保存
-    let windowArea: WindowArea = AppStorageV2.connect(WindowArea, () => new WindowArea())!
+    let windowArea: WindowArea = getWindowAreaByAppStorage()
     windowArea.statusBarHeight = statusHeight
     windowArea.navigationHeight = navigationHeight
 

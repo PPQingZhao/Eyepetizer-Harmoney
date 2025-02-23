@@ -1,5 +1,5 @@
-import { WindowArea } from "base/src/main/ets/utils/Window";
-import { AppStorageV2 } from "@kit.ArkUI";
+import { getWindowAreaByAppStorage, WindowArea } from 'base/src/main/ets/utils/Window';
+import { util } from '@kit.ArkTS';
 
 @Builder
 export function HomePageBuilder(name: String, param: Object) {
@@ -9,7 +9,7 @@ export function HomePageBuilder(name: String, param: Object) {
 @Preview
 @ComponentV2
 export struct HomePage {
-  @Local windowArea: WindowArea = AppStorageV2.connect(WindowArea, () => new WindowArea())!
+  @Local windowArea: WindowArea = getWindowAreaByAppStorage()
   @Local message: string = 'Home';
   mNavPathStack: NavPathStack = new NavPathStack()
 
@@ -18,7 +18,9 @@ export struct HomePage {
       Stack() {
         Text(this.message + "  " + this.windowArea.statusBarHeight)
           .fontSize(50)
-          .fontWeight(FontWeight.Bold)
+          .fontWeight(FontWeight.Bold).onClick(() => {
+          this.windowArea.navigationHeight = 100
+        })
       }.width('100%')
       .height('100%')
       .backgroundColor('#cc23')

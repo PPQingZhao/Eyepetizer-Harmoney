@@ -1,11 +1,21 @@
-import { AppStorageV2, NavPushPathHelper } from '@kit.ArkUI'
-import { Find, Home, WindowArea } from 'base'
+import { CustomColors, NavPushPathHelper } from '@kit.ArkUI';
+import { Home, WindowArea } from 'base';
+import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window';
+
+class BlackAppColor implements CustomColors {
+  fontPrimary?: ResourceColor | undefined = Color.Blue
+}
+
+class DefaultAppTheme implements CustomTheme {
+  colors: BlackAppColor = new BlackAppColor()
+}
 
 @ComponentV2
 export struct NavContentView {
-  @Local windowArea: WindowArea = AppStorageV2.connect<WindowArea>(WindowArea, () => new WindowArea())!;
+  @Local windowArea: WindowArea = getWindowAreaByAppStorage();
   mNavPathStack: NavPathStack = new NavPathStack()
   mNavPushPathHelper: NavPushPathHelper = new NavPushPathHelper(this.mNavPathStack)
+  @Local theme: CustomTheme = new DefaultAppTheme()
 
   @Builder
   tabBuilder(content: string | Resource,
@@ -16,11 +26,15 @@ export struct NavContentView {
       alignItems: ItemAlign.Center
     }) {
       Image(src)
-      Text(content).fontSize(15)
-    }
+      Text(content)
+    }.onClick(() => {
+
+    })
   }
 
-  build() {
+  @Builder
+  ContentBuilder() {
+
     Column() {
       Navigation(this.mNavPathStack)
         .hideNavBar(true)
@@ -45,5 +59,9 @@ export struct NavContentView {
       .layoutWeight(1)
       .padding({ 'bottom': px2vp(this.windowArea.navigationHeight) })
     }.backgroundColor(Color.Red)
+  }
+
+  build() {
+    this.ContentBuilder()
   }
 }

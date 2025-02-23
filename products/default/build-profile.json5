@@ -1,6 +1,10 @@
 {
   "apiType": "stageMode",
   "buildOption": {
+    "arkOptions": {
+      "types": [
+      ]
+    }
   },
   "buildOptionSet": [
     {
