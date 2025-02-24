@@ -1,0 +1,20 @@
+{
+  "string": [
+    {
+      "name": "home",
+      "value": "首页"
+    },
+    {
+      "name": "find",
+      "value": "发现"
+    },
+    {
+      "name": "square",
+      "value": "广场"
+    },
+    {
+      "name": "mine",
+      "value": "我的"
+    }
+  ]
+}

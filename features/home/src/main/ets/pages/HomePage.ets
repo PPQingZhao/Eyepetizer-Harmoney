@@ -1,5 +1,4 @@
 import { getWindowAreaByAppStorage, WindowArea } from 'base/src/main/ets/utils/Window';
-import { util } from '@kit.ArkTS';
 
 @Builder
 export function HomePageBuilder(name: String, param: Object) {
@@ -9,7 +8,7 @@ export function HomePageBuilder(name: String, param: Object) {
 @Preview
 @ComponentV2
 export struct HomePage {
-  @Local windowArea: WindowArea = getWindowAreaByAppStorage()
+  windowArea: WindowArea = getWindowAreaByAppStorage()
   @Local message: string = 'Home';
   mNavPathStack: NavPathStack = new NavPathStack()
 

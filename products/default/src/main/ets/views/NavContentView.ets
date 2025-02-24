@@ -1,34 +1,34 @@
-import { CustomColors, NavPushPathHelper } from '@kit.ArkUI';
+import { LengthMetrics, NavPushPathHelper } from '@kit.ArkUI';
 import { Home, WindowArea } from 'base';
 import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window';
-
-class BlackAppColor implements CustomColors {
-  fontPrimary?: ResourceColor | undefined = Color.Blue
-}
-
-class DefaultAppTheme implements CustomTheme {
-  colors: BlackAppColor = new BlackAppColor()
-}
+import { RouterTabInfo } from 'ui';
+import { NavContentViewModel } from '../viewModel/NavContentViewModel';
 
 @ComponentV2
 export struct NavContentView {
-  @Local windowArea: WindowArea = getWindowAreaByAppStorage();
+  windowArea: WindowArea = getWindowAreaByAppStorage();
   mNavPathStack: NavPathStack = new NavPathStack()
   mNavPushPathHelper: NavPushPathHelper = new NavPushPathHelper(this.mNavPathStack)
-  @Local theme: CustomTheme = new DefaultAppTheme()
+  navContentViewModel: NavContentViewModel = new NavContentViewModel()
+  @Local curPageIndex: number = 0
 
   @Builder
-  tabBuilder(content: string | Resource,
-    src: PixelMap | ResourceStr | DrawableDescriptor) {
+  tabBuilder(tabInfo: RouterTabInfo, index: number) {
     Flex({
       direction: FlexDirection.Column,
       wrap: FlexWrap.NoWrap,
-      alignItems: ItemAlign.Center
+      alignItems: ItemAlign.Center,
+      space: { main: LengthMetrics.vp(3) }
     }) {
-      Image(src)
-      Text(content)
+      Image(this.curPageIndex == index ? tabInfo.iconSelected : tabInfo.icon)
+      Text(tabInfo.name).fontColor(this.curPageIndex == index ? Color.Orange : Color.Black)
     }.onClick(() => {
+      if (this.curPageIndex == index) {
+        return
+      }
 
+      this.curPageIndex = index
+      this.mNavPushPathHelper.pushPath(tabInfo.moduleName, { name: tabInfo.page },false)
     })
   }
 
@@ -41,17 +41,13 @@ export struct NavContentView {
         .layoutWeight(8)
         .onAppear(() => {
           this.mNavPushPathHelper.pushPath(Home.moduleName, { name: Home.HomePage })
-          // this.mNavPushPathHelper.pushPath(Square.moduleName, { name: Square.SquarePage })
-          // this.mNavPushPathHelper.pushPath(User.moduleName, { name: User.MinePage })
-          // this.mNavPushPathHelper.pushPath(Find.moduleName, { name: Find.FindPage })
         })
 
       // toolbar
       Row({}) {
-        this.tabBuilder("首页", $r('app.media.app_icon'))
-        this.tabBuilder("发现", $r('app.media.app_icon'))
-        this.tabBuilder("广场", $r('app.media.app_icon'))
-        this.tabBuilder("我的", $r('app.media.app_icon'))
+        ForEach(this.navContentViewModel.tabInfos, (item: RouterTabInfo, index: number) => {
+          this.tabBuilder(item, index)
+        })
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceAround)

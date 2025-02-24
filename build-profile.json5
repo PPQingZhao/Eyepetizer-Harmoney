@@ -68,6 +68,18 @@
     {
       "name": "user",
       "srcPath": "./features/user",
+    },
+    {
+      "name": "ui",
+      "srcPath": "./commons/ui",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     }
   ]
 }
