@@ -4,7 +4,7 @@ import { RouterTabInfo } from 'ui'
 @ObservedV2
 export class NavContentViewModel {
   @Trace
-  tabInfos: TabModel[] = [
+  tabInfos: TabModel<RouterTabInfo>[] = [
     createRouterTabModel($r('app.string.home'), $r('app.media.app_icon'), $r('app.media.app_icon'), Home.moduleName,
       Home.HomePage),
     createRouterTabModel($r('app.string.find'), $r('app.media.app_icon'), $r('app.media.app_icon'), Find.moduleName,
@@ -16,13 +16,12 @@ export class NavContentViewModel {
   ]
 }
 
-
 @ObservedV2
-export class TabModel {
+export class TabModel<Info> {
   @Trace isSelected: boolean = false
-  tabInfo: RouterTabInfo
+  tabInfo: Info
 
-  constructor(info: RouterTabInfo, isSelected: boolean) {
+  constructor(info: Info, isSelected: boolean) {
     this.isSelected = isSelected
     this.tabInfo = info
   }
@@ -33,7 +32,7 @@ export function createRouterTabModel(tabName: Resource,
   iconSelected: Resource,
   moduleName: string,
   page: string,
-  isSelected: boolean = false): TabModel {
+  isSelected: boolean = false): TabModel<RouterTabInfo> {
   let tabInfo: RouterTabInfo = {
     name: tabName,
     icon: icon,
@@ -41,5 +40,6 @@ export function createRouterTabModel(tabName: Resource,
     moduleName: moduleName,
     page: page
   }
-  return new TabModel(tabInfo, isSelected)
+  return new TabModel<RouterTabInfo>(tabInfo, isSelected)
 }
+

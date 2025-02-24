@@ -1,6 +1,7 @@
 import { LengthMetrics, NavPushPathHelper } from '@kit.ArkUI';
 import { Home, WindowArea } from 'base';
 import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window';
+import { RouterTabInfo } from 'ui/src/main/ets/tab/TabInfo';
 import { NavContentViewModel, TabModel } from '../viewModel/NavContentViewModel';
 
 @ComponentV2
@@ -9,10 +10,10 @@ export struct NavContentView {
   mNavPathStack: NavPathStack = new NavPathStack()
   mNavPushPathHelper: NavPushPathHelper = new NavPushPathHelper(this.mNavPathStack)
   navContentViewModel: NavContentViewModel = new NavContentViewModel()
-  curTabModel: TabModel = this.navContentViewModel.tabInfos[0]
+  curTabModel: TabModel<RouterTabInfo> = this.navContentViewModel.tabInfos[0]
 
   @Builder
-  tabBuilder(tabModel: TabModel) {
+  tabBuilder(tabModel: TabModel<RouterTabInfo>) {
     Flex({
       direction: FlexDirection.Column,
       wrap: FlexWrap.NoWrap,
@@ -54,7 +55,7 @@ export struct NavContentView {
 
       // toolbar
       Row({}) {
-        ForEach(this.navContentViewModel.tabInfos, (item: TabModel) => {
+        ForEach(this.navContentViewModel.tabInfos, (item: TabModel<RouterTabInfo>) => {
           this.tabBuilder(item)
         })
       }
