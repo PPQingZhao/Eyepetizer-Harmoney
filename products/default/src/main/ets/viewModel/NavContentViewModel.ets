@@ -1,36 +1,45 @@
-import { Find, Home, Square, User } from "base/src/main/ets/router/Modules";
-import { RouterTabInfo } from "ui";
+import { Find, Home, Square, User } from 'base'
+import { RouterTabInfo } from 'ui'
 
-
+@ObservedV2
 export class NavContentViewModel {
-  tabInfos: RouterTabInfo[] = [
-    {
-      name: $r('app.string.home'),
-      icon: $r('app.media.app_icon'),
-      iconSelected: $r('app.media.app_icon'),
-      moduleName: Home.moduleName,
-      page: Home.HomePage
-    },
-    {
-      name: $r('app.string.find'),
-      icon: $r('app.media.app_icon'),
-      iconSelected: $r('app.media.app_icon'),
-      moduleName: Find.moduleName,
-      page: Find.FindPage
-    },
-    {
-      name: $r('app.string.square'),
-      icon: $r('app.media.app_icon'),
-      iconSelected: $r('app.media.app_icon'),
-      moduleName: Square.moduleName,
-      page: Square.SquarePage
-    },
-    {
-      name: $r('app.string.mine'),
-      icon: $r('app.media.app_icon'),
-      iconSelected: $r('app.media.app_icon'),
-      moduleName: User.moduleName,
-      page: User.MinePage
-    },
+  @Trace
+  tabInfos: TabModel[] = [
+    createRouterTabModel($r('app.string.home'), $r('app.media.app_icon'), $r('app.media.app_icon'), Home.moduleName,
+      Home.HomePage),
+    createRouterTabModel($r('app.string.find'), $r('app.media.app_icon'), $r('app.media.app_icon'), Find.moduleName,
+      Find.FindPage),
+    createRouterTabModel($r('app.string.square'), $r('app.media.app_icon'), $r('app.media.app_icon'), Square.moduleName,
+      Square.SquarePage),
+    createRouterTabModel($r('app.string.mine'), $r('app.media.app_icon'), $r('app.media.app_icon'), User.moduleName,
+      User.MinePage)
   ]
+}
+
+
+@ObservedV2
+export class TabModel {
+  @Trace isSelected: boolean = false
+  tabInfo: RouterTabInfo
+
+  constructor(info: RouterTabInfo, isSelected: boolean) {
+    this.isSelected = isSelected
+    this.tabInfo = info
+  }
+}
+
+export function createRouterTabModel(tabName: Resource,
+  icon: Resource,
+  iconSelected: Resource,
+  moduleName: string,
+  page: string,
+  isSelected: boolean = false): TabModel {
+  let tabInfo: RouterTabInfo = {
+    name: tabName,
+    icon: icon,
+    iconSelected: iconSelected,
+    moduleName: moduleName,
+    page: page
+  }
+  return new TabModel(tabInfo, isSelected)
 }

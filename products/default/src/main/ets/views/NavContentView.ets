@@ -1,8 +1,7 @@
 import { LengthMetrics, NavPushPathHelper } from '@kit.ArkUI';
 import { Home, WindowArea } from 'base';
 import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window';
-import { RouterTabInfo } from 'ui';
-import { NavContentViewModel } from '../viewModel/NavContentViewModel';
+import { NavContentViewModel, TabModel } from '../viewModel/NavContentViewModel';
 
 @ComponentV2
 export struct NavContentView {
@@ -10,25 +9,34 @@ export struct NavContentView {
   mNavPathStack: NavPathStack = new NavPathStack()
   mNavPushPathHelper: NavPushPathHelper = new NavPushPathHelper(this.mNavPathStack)
   navContentViewModel: NavContentViewModel = new NavContentViewModel()
-  @Local curPageIndex: number = 0
+  curTabModel: TabModel = this.navContentViewModel.tabInfos[0]
 
   @Builder
-  tabBuilder(tabInfo: RouterTabInfo, index: number) {
+  tabBuilder(tabModel: TabModel) {
     Flex({
       direction: FlexDirection.Column,
       wrap: FlexWrap.NoWrap,
       alignItems: ItemAlign.Center,
       space: { main: LengthMetrics.vp(3) }
     }) {
-      Image(this.curPageIndex == index ? tabInfo.iconSelected : tabInfo.icon)
-      Text(tabInfo.name).fontColor(this.curPageIndex == index ? Color.Orange : Color.Black)
+      Image(tabModel.isSelected ?
+        tabModel.tabInfo?.iconSelected :
+        tabModel.tabInfo?.icon)
+      Text(tabModel.tabInfo?.name!)
+        .fontColor(tabModel.isSelected ? Color.Orange : Color.Black)
     }.onClick(() => {
-      if (this.curPageIndex == index) {
+      if (tabModel.isSelected) {
         return
       }
 
-      this.curPageIndex = index
-      this.mNavPushPathHelper.pushPath(tabInfo.moduleName, { name: tabInfo.page },false)
+      let oldTabModel = this.curTabModel
+      this.curTabModel = tabModel
+
+      oldTabModel.isSelected = false
+      this.curTabModel.isSelected = true
+
+      this.mNavPushPathHelper.pushPath(tabModel.tabInfo?.moduleName,
+        { name: tabModel.tabInfo?.page }, false)
     })
   }
 
@@ -40,13 +48,14 @@ export struct NavContentView {
         .hideNavBar(true)
         .layoutWeight(8)
         .onAppear(() => {
+          this.curTabModel.isSelected = true
           this.mNavPushPathHelper.pushPath(Home.moduleName, { name: Home.HomePage })
         })
 
       // toolbar
       Row({}) {
-        ForEach(this.navContentViewModel.tabInfos, (item: RouterTabInfo, index: number) => {
-          this.tabBuilder(item, index)
+        ForEach(this.navContentViewModel.tabInfos, (item: TabModel) => {
+          this.tabBuilder(item)
         })
       }
       .width('100%')
