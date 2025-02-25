@@ -1,4 +1,5 @@
 import { getWindowAreaByAppStorage, WindowArea } from 'base/src/main/ets/utils/Window';
+import { util } from '@kit.ArkTS';
 
 @Builder
 export function HomePageBuilder(name: String, param: Object) {
@@ -18,7 +19,7 @@ export struct HomePage {
         Text(this.message + "  " + this.windowArea.statusBarHeight)
           .fontSize(50)
           .fontWeight(FontWeight.Bold).onClick(() => {
-          this.windowArea.navigationHeight = 100
+          this.windowArea.statusBarHeight += 2
         })
       }.width('100%')
       .height('100%')
@@ -26,8 +27,11 @@ export struct HomePage {
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP])
     }.width('100%')
     .height('100%')
+    .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
       this.mNavPathStack = context.pathStack
+    }).onShown(() => {
+      console.log("TAG", 'home  onPageShow ' + util.getHash(this))
     })
   }
 }

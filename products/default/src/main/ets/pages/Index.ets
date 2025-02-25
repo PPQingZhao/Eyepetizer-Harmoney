@@ -10,6 +10,6 @@ struct Index {
       NavContentView()
         .width('100%')
         .height('100%')
-    }.hideToolBar(true)
+    }.hideToolBar(true).hideTitleBar(true)
   }
 }

@@ -21,9 +21,9 @@ export struct NavContentView {
       space: { main: LengthMetrics.vp(3) }
     }) {
       Image(tabModel.isSelected ?
-        tabModel.tabInfo?.iconSelected :
-        tabModel.tabInfo?.icon)
-      Text(tabModel.tabInfo?.name!)
+      tabModel.tabInfo.iconSelected :
+      tabModel.tabInfo.icon)
+      Text(tabModel.tabInfo.name!)
         .fontColor(tabModel.isSelected ? Color.Orange : Color.Black)
     }.onClick(() => {
       if (tabModel.isSelected) {
@@ -36,8 +36,8 @@ export struct NavContentView {
       oldTabModel.isSelected = false
       this.curTabModel.isSelected = true
 
-      this.mNavPushPathHelper.pushPath(tabModel.tabInfo?.moduleName,
-        { name: tabModel.tabInfo?.page }, false)
+      this.mNavPushPathHelper.pushPath(tabModel.tabInfo.moduleName,
+        { name: tabModel.tabInfo.page }, { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON, animated: false })
     })
   }
 
@@ -46,11 +46,14 @@ export struct NavContentView {
 
     Column() {
       Navigation(this.mNavPathStack)
+        .hideToolBar(true)
+        .hideTitleBar(true)
         .hideNavBar(true)
         .layoutWeight(8)
         .onAppear(() => {
           this.curTabModel.isSelected = true
-          this.mNavPushPathHelper.pushPath(Home.moduleName, { name: Home.HomePage })
+          this.mNavPushPathHelper.pushPath(Home.moduleName, { name: Home.HomePage },
+            { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON, animated: false })
         })
 
       // toolbar

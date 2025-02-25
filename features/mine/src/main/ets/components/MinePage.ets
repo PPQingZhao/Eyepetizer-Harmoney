@@ -1,6 +1,12 @@
+import { util } from "@kit.ArkTS";
+
 @ComponentV2
 export struct MinePage {
   @Local message: string = 'mine';
+
+  aboutToAppear(): void {
+    console.log("TAG",'mine   ' +  util.getHash(this))
+  }
 
   build() {
     Row() {

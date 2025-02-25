@@ -1,3 +1,4 @@
+import { util } from "@kit.ArkTS";
 
 @Builder
 export function SquarePageBuilder(name: String, param: Object) {
@@ -7,6 +8,10 @@ export function SquarePageBuilder(name: String, param: Object) {
 @ComponentV2
 export struct SquarePage {
   @Local message: string = 'Square';
+
+  aboutToAppear(): void {
+    console.log("TAG", 'square   ' + util.getHash(this))
+  }
 
   build() {
     NavDestination() {
@@ -20,6 +25,6 @@ export struct SquarePage {
         .width('100%')
       }
       .height('100%')
-    }
+    }.hideTitleBar(true)
   }
 }

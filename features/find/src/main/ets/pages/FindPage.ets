@@ -1,3 +1,5 @@
+import { util } from '@kit.ArkTS';
+
 @Builder
 export function FindPageBuilder(name: String, param: Object) {
   FindPage()
@@ -6,6 +8,10 @@ export function FindPageBuilder(name: String, param: Object) {
 @ComponentV2
 export struct FindPage {
   @Local message: string = 'Find';
+
+  aboutToAppear(): void {
+    console.log("TAG", 'find   ' + util.getHash(this))
+  }
 
   build() {
     NavDestination() {
@@ -18,6 +24,6 @@ export struct FindPage {
         .width('100%')
       }
       .height('100%')
-    }
+    }.hideTitleBar(true)
   }
 }
