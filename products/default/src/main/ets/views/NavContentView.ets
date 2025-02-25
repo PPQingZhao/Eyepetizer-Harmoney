@@ -1,4 +1,4 @@
-import { LengthMetrics, NavPushPathHelper } from '@kit.ArkUI';
+import { NavPushPathHelper } from '@kit.ArkUI';
 import { Home, WindowArea } from 'base';
 import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window';
 import { RouterTabInfo } from 'ui/src/main/ets/tab/TabInfo';
@@ -14,18 +14,24 @@ export struct NavContentView {
 
   @Builder
   tabBuilder(tabModel: TabModel<RouterTabInfo>) {
-    Flex({
-      direction: FlexDirection.Column,
-      wrap: FlexWrap.NoWrap,
-      alignItems: ItemAlign.Center,
-      space: { main: LengthMetrics.vp(3) }
-    }) {
-      Image(tabModel.isSelected ?
-      tabModel.tabInfo.iconSelected :
-      tabModel.tabInfo.icon)
-      Text(tabModel.tabInfo.name!)
-        .fontColor(tabModel.isSelected ? Color.Orange : Color.Black)
-    }.onClick(() => {
+
+    Stack({ alignContent: Alignment.Center }) {
+      Text(tabModel.tabInfo.name)
+        .fontColor(Color.Black)
+        .scale({ x: tabModel.isSelected ? 0.8 : 1, y: tabModel.isSelected ? 0.8 : 1 })
+        .animation({ curve: Curve.Linear, duration: 400 })
+      Image(tabModel.tabInfo.icon)
+        .padding(5)
+        .translate({ y: tabModel.isSelected ? '0%' : '100%' })
+        .backgroundColor(Color.White)
+        .animation({ curve: tabModel.isSelected ? Curve.EaseIn : Curve.EaseOut, duration: 400 })
+        .borderRadius(8)
+
+    }
+    .height('60%')
+    .aspectRatio(1)
+    .clip(true)
+    .onClick(() => {
       if (tabModel.isSelected) {
         return
       }
@@ -64,10 +70,10 @@ export struct NavContentView {
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceAround)
-      .backgroundColor(Color.Blue)
+      .backgroundColor(Color.White)
       .layoutWeight(1)
       .padding({ 'bottom': px2vp(this.windowArea.navigationHeight) })
-    }.backgroundColor(Color.Red)
+    }.backgroundColor(Color.White)
   }
 
   build() {
