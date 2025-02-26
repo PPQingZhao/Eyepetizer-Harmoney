@@ -1,3 +1,4 @@
+
 export class Home {
   static readonly moduleName: string = "home"
   static readonly HomePage: string = "HomePage"

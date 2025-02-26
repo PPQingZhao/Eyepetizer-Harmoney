@@ -1,8 +1,8 @@
 import { NavPushPathHelper } from '@kit.ArkUI';
 import { Home, WindowArea } from 'base';
 import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window';
-import { RouterTabInfo } from 'ui/src/main/ets/tab/TabInfo';
-import { NavContentViewModel, TabModel } from '../viewModel/NavContentViewModel';
+import { NavContentViewModel } from '../viewModel/NavContentViewModel';
+import { RouterTabInfo, TabModel } from 'ui';
 
 @ComponentV2
 export struct NavContentView {
@@ -51,6 +51,7 @@ export struct NavContentView {
   ContentBuilder() {
 
     Column() {
+
       Navigation(this.mNavPathStack)
         .hideToolBar(true)
         .hideTitleBar(true)
