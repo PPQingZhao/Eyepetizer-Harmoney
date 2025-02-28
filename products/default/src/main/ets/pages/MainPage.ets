@@ -4,7 +4,7 @@ import { MainViewModel } from '../viewModel/MainViewModel';
 import { RouterTabInfo, TabModel } from 'ui';
 import { LengthMetrics, NavPushPathHelper } from '@kit.ArkUI';
 import { BreakpointModel, getBreakpointModelByAppStorage } from 'base/src/main/ets/constans/BreakpointModel';
-import { BreakpointConstants } from 'base/src/main/ets/constans/BreakpointConstants';
+import { BreakpointType } from 'base/src/main/ets/constans/BreakpointType';
 
 @ComponentV2
 export struct MainPage {
@@ -22,6 +22,10 @@ export struct MainPage {
       Text(tabModel.tabInfo.name)
         .scale({ x: tabModel.isSelected ? 0.8 : 1, y: tabModel.isSelected ? 0.8 : 1 })
         .animation({ curve: Curve.Linear, duration: 400 })
+        .maxLines(1)
+        .maxFontSize(15)
+        .minFontSize(11)
+
       Image(tabModel.tabInfo.icon)
         .padding(5)
         .translate({ y: tabModel.isSelected ? '0%' : '101%' })
@@ -29,8 +33,8 @@ export struct MainPage {
         .animation({ curve: tabModel.isSelected ? Curve.EaseIn : Curve.EaseOut, duration: 400 })
         .borderRadius(8)
     }
-    .height(this.curBreakpoint.breakpoint == BreakpointConstants.BREAKPOINT_LG ? undefined : '60%')
-    .width(this.curBreakpoint.breakpoint == BreakpointConstants.BREAKPOINT_LG ? '40%' : undefined)
+    .height(new BreakpointType('60%', undefined, undefined).getValue(this.curBreakpoint.breakpoint))
+    .width(new BreakpointType(undefined, '50%', '40%').getValue(this.curBreakpoint.breakpoint))
     .aspectRatio(1)
     .clip(true)
     .onClick(() => {
@@ -68,22 +72,25 @@ export struct MainPage {
   CustomToolBuilder() {
     // toolbar
     Flex({
-      direction: this.curBreakpoint.breakpoint == BreakpointConstants.BREAKPOINT_LG ? FlexDirection.Column :
-      FlexDirection.Row,
-      justifyContent: this.curBreakpoint.breakpoint == BreakpointConstants.BREAKPOINT_LG ? FlexAlign.Center :
-      FlexAlign.SpaceAround,
+      direction:
+      new BreakpointType(FlexDirection.Row, FlexDirection.Column,
+        FlexDirection.Column).getValue(this.curBreakpoint.breakpoint),
+      justifyContent:
+      new BreakpointType(FlexAlign.SpaceAround, FlexAlign.Center,
+        FlexAlign.Center).getValue(this.curBreakpoint.breakpoint),
       space: { main: LengthMetrics.vp(20) },
     }) {
       ForEach(this.navContentViewModel.tabInfos, (item: TabModel<RouterTabInfo>) => {
         Stack({ alignContent: Alignment.Center }) {
           this.tabBuilder(item)
-        }.height(this.curBreakpoint.breakpoint == BreakpointConstants.BREAKPOINT_LG ? undefined : '100%')
-        .width(this.curBreakpoint.breakpoint == BreakpointConstants.BREAKPOINT_LG ? '100%' : undefined)
+        }.height(new BreakpointType('100%', undefined, undefined).getValue(this.curBreakpoint.breakpoint))
+        .width(new BreakpointType(undefined, '100%', '100%').getValue(this.curBreakpoint.breakpoint))
       })
     }
     .width('100%')
     .height('100%')
     .backgroundColor($r('sys.color.background_primary'))
+
     // .padding({ 'bottom': px2vp(this.windowArea.navigationHeight) })
   }
 
@@ -91,16 +98,17 @@ export struct MainPage {
 
     NavDestination() {
       GridRow({
-        direction: this.curBreakpoint.breakpoint == BreakpointConstants.BREAKPOINT_LG ? GridRowDirection.RowReverse :
-        GridRowDirection.Row
+        direction: new BreakpointType(GridRowDirection.Row, GridRowDirection.RowReverse,
+          GridRowDirection.RowReverse).getValue(this.curBreakpoint.breakpoint),
+        columns: { sm: 12, md: 10, lg: 12 }
       }) {
-        GridCol({ span: { sm: 12, md: 12, lg: 11 } }) {
+        GridCol({ span: { sm: 12, md: 9, lg: 11 } }) {
           this.ContentBuilder()
-        }.height(this.curBreakpoint.breakpoint == BreakpointConstants.BREAKPOINT_LG ? '100%' : '92%')
+        }.height(new BreakpointType('92%', '100%', '100%').getValue(this.curBreakpoint.breakpoint))
 
-        GridCol({ span: { sm: 12, md: 12, lg: 1 } }) {
+        GridCol({ span: { sm: 12, md: 1, lg: 1 } }) {
           this.CustomToolBuilder()
-        }.height(this.curBreakpoint.breakpoint == BreakpointConstants.BREAKPOINT_LG ? '100%' : '8%')
+        }.height(new BreakpointType('8%', '100%', '100%').getValue(this.curBreakpoint.breakpoint))
       }.width('100%')
       .height('100%')
     }.hideTitleBar(true)
