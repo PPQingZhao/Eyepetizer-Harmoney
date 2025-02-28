@@ -1,11 +1,11 @@
 import { NavPushPathHelper } from '@kit.ArkUI';
 import { Home, WindowArea } from 'base';
 import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window';
-import { NavContentViewModel } from '../viewModel/NavContentViewModel';
+import { NavContentViewModel } from '../viewModel/MainViewModel';
 import { RouterTabInfo, TabModel } from 'ui';
 
 @ComponentV2
-export struct NavContentView {
+export struct MainPage {
   windowArea: WindowArea = getWindowAreaByAppStorage();
   mNavPathStack: NavPathStack = new NavPathStack()
   mNavPushPathHelper: NavPushPathHelper = new NavPushPathHelper(this.mNavPathStack)
@@ -17,13 +17,12 @@ export struct NavContentView {
 
     Stack({ alignContent: Alignment.Center }) {
       Text(tabModel.tabInfo.name)
-        .fontColor(Color.Black)
         .scale({ x: tabModel.isSelected ? 0.8 : 1, y: tabModel.isSelected ? 0.8 : 1 })
         .animation({ curve: Curve.Linear, duration: 400 })
       Image(tabModel.tabInfo.icon)
         .padding(5)
         .translate({ y: tabModel.isSelected ? '0%' : '100%' })
-        .backgroundColor(Color.White)
+        .backgroundColor($r('sys.color.background_primary'))
         .animation({ curve: tabModel.isSelected ? Curve.EaseIn : Curve.EaseOut, duration: 400 })
         .borderRadius(8)
 
@@ -31,6 +30,7 @@ export struct NavContentView {
     .height('60%')
     .aspectRatio(1)
     .clip(true)
+    .backgroundColor($r('sys.color.background_primary'))
     .onClick(() => {
       if (tabModel.isSelected) {
         return
@@ -49,9 +49,7 @@ export struct NavContentView {
 
   @Builder
   ContentBuilder() {
-
     Column() {
-
       Navigation(this.mNavPathStack)
         .hideToolBar(true)
         .hideTitleBar(true)
@@ -78,6 +76,13 @@ export struct NavContentView {
   }
 
   build() {
-    this.ContentBuilder()
+    NavDestination() {
+      this.ContentBuilder()
+    }.hideTitleBar(true)
   }
+}
+
+@Builder
+function MainPageBuilder(name: String, param: Object) {
+  MainPage()
 }

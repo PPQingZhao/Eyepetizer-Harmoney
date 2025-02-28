@@ -1,6 +1,7 @@
-import {  window } from '@kit.ArkUI';
+import { window } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import BaseEntryAbility from 'base/src/main/ets/entryability/BaseEntryAbility';
+import { AppTheme, setAppTheme } from 'ui/src/main/ets/theme/WithDynamicThemeView';
 
 export default class EntryAbility extends BaseEntryAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -16,5 +17,6 @@ export default class EntryAbility extends BaseEntryAbility {
       hilog.info(0x0000, 'testTag', 'Succeeded in loading the content.');
     });
 
+    setAppTheme(AppTheme.Default)
   }
 }

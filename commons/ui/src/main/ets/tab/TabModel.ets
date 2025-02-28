@@ -26,3 +26,4 @@ export function createRouterTabModel(tabName: Resource,
   }
   return new TabModel<RouterTabInfo>(tabInfo, isSelected)
 }
+

@@ -1,15 +1,20 @@
-import { NavContentView } from '../views/NavContentView'
+import { NavPushPathHelper } from '@kit.ArkUI'
 
 @Entry
 @ComponentV2
 struct Index {
   mNavPathStack: NavPathStack = new NavPathStack()
+  mNavHelper: NavPushPathHelper = new NavPushPathHelper(this.mNavPathStack)
 
   build() {
-    Navigation(this.mNavPathStack) {
-      NavContentView()
-        .width('100%')
-        .height('100%')
-    }.hideToolBar(true).hideTitleBar(true)
+    Navigation(this.mNavPathStack)
+      .hideToolBar(true)
+      .hideTitleBar(true)
+      .onAppear(() => {
+        this.mNavHelper.pushPath(
+          'default',
+          { name: 'MainPage' },
+          { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON, animated: false })
+      })
   }
 }
