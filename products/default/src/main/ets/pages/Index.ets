@@ -10,11 +10,10 @@ struct Index {
     Navigation(this.mNavPathStack)
       .hideToolBar(true)
       .hideTitleBar(true)
+      .mode(NavigationMode.Stack)
       .onAppear(() => {
-        this.mNavHelper.pushPath(
-          'default',
-          { name: 'MainPage' },
-          { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON, animated: false })
+        this.mNavHelper.pushPath('default',
+          { name: 'MainPage' }, { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON, animated: false })
       })
   }
 }

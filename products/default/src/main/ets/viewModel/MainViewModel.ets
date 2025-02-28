@@ -3,7 +3,7 @@ import { RouterTabInfo, TabModel } from 'ui'
 import { createRouterTabModel } from 'ui/src/main/ets/tab/TabModel'
 
 @ObservedV2
-export class NavContentViewModel {
+export class MainViewModel {
   @Trace
   tabInfos: TabModel<RouterTabInfo>[] = [
     createRouterTabModel(
