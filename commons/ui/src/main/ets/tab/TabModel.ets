@@ -1,4 +1,4 @@
-import { RouterTabInfo } from "./TabInfo"
+import { RouterTabInfo, TabInfo } from './TabInfo'
 
 @ObservedV2
 export class TabModel<Info> {
@@ -12,8 +12,8 @@ export class TabModel<Info> {
 }
 
 export function createRouterTabModel(tabName: Resource,
-  icon: Resource,
-  iconSelected: Resource,
+  icon: Resource | undefined = undefined,
+  iconSelected: Resource | undefined = undefined,
   moduleName: string,
   page: string,
   isSelected: boolean = false): TabModel<RouterTabInfo> {
@@ -25,5 +25,18 @@ export function createRouterTabModel(tabName: Resource,
     page: page
   }
   return new TabModel<RouterTabInfo>(tabInfo, isSelected)
+}
+
+
+export function createTabModel(tabName: Resource,
+  icon: Resource | undefined = undefined,
+  iconSelected: Resource | undefined = undefined,
+  isSelected: boolean = false): TabModel<TabInfo> {
+  let tabInfo: TabInfo = {
+    name: tabName,
+    icon: icon,
+    iconSelected: iconSelected,
+  }
+  return new TabModel<TabInfo>(tabInfo, isSelected)
 }
 

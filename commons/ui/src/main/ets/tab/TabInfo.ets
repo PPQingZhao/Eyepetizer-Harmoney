@@ -1,4 +1,3 @@
-
 export interface RouterTabInfo extends TabInfo {
   moduleName: string
   page: string
@@ -6,6 +5,6 @@ export interface RouterTabInfo extends TabInfo {
 
 export interface TabInfo {
   name: Resource | string
-  icon: Resource
-  iconSelected: Resource
+  icon: Resource | undefined
+  iconSelected: Resource | undefined
 }

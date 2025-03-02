@@ -5,6 +5,7 @@ import { RouterTabInfo, TabModel } from 'ui';
 import { LengthMetrics, NavPushPathHelper } from '@kit.ArkUI';
 import { BreakpointModel, getBreakpointModelByAppStorage } from 'base/src/main/ets/constans/BreakpointModel';
 import { BreakpointType } from 'base/src/main/ets/constans/BreakpointType';
+import { DefaultAppTheme } from 'ui/src/main/ets/theme/WithDynamicThemeView';
 
 @ComponentV2
 export struct MainPage {
@@ -14,6 +15,11 @@ export struct MainPage {
   navContentViewModel: MainViewModel = new MainViewModel()
   curTabModel: TabModel<RouterTabInfo> = this.navContentViewModel.tabInfos[0]
   @Local curBreakpoint: BreakpointModel = getBreakpointModelByAppStorage()
+  theme: CustomTheme = new DefaultAppTheme()
+
+  onWillApplyTheme(theme: Theme): void {
+    this.theme = theme
+  }
 
   @Builder
   tabBuilder(tabModel: TabModel<RouterTabInfo>) {
@@ -29,9 +35,10 @@ export struct MainPage {
       Image(tabModel.tabInfo.icon)
         .padding(5)
         .translate({ y: tabModel.isSelected ? '0%' : '101%' })
-        .backgroundColor($r('sys.color.background_primary'))
         .animation({ curve: tabModel.isSelected ? Curve.EaseIn : Curve.EaseOut, duration: 400 })
         .borderRadius(8)
+        .backgroundColor(this.theme.colors?.backgroundPrimary)
+        .fillColor(this.theme.colors?.fontPrimary)
     }
     .height(new BreakpointType('60%', undefined, undefined).getValue(this.curBreakpoint.breakpoint))
     .width(new BreakpointType(undefined, '50%', '40%').getValue(this.curBreakpoint.breakpoint))
@@ -89,7 +96,7 @@ export struct MainPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor($r('sys.color.background_primary'))
+    .backgroundColor(this.theme.colors?.backgroundPrimary)
 
     // .padding({ 'bottom': px2vp(this.windowArea.navigationHeight) })
   }

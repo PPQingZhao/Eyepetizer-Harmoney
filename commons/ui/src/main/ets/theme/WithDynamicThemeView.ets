@@ -1,19 +1,23 @@
-import { AppStorageV2, CustomColors, ThemeControl } from '@kit.ArkUI'
+import { AppStorageV2, CustomColors, ThemeControl, window } from '@kit.ArkUI'
+import { BusinessError } from '@kit.BasicServicesKit'
 
 class DefaultAppColor implements CustomColors {
-  fontPrimary?: ResourceColor | undefined = Color.Black
+  fontPrimary: ResourceColor | undefined = Color.White
+  fontOnPrimary : ResourceColor | undefined = '#ff736e6e'
+  backgroundPrimary: ResourceColor | undefined = Color.Black
 }
 
 class BlackAppColor implements CustomColors {
   fontPrimary?: ResourceColor | undefined = Color.Blue
+  backgroundPrimary: ResourceColor | undefined = Color.Black
 }
 
-class DefaultAppTheme implements CustomTheme {
+export class DefaultAppTheme implements CustomTheme {
   colors: CustomColors = new DefaultAppColor()
 }
 
 class BlackAppTheme implements CustomTheme {
-  colors: DefaultAppColor = new BlackAppColor()
+  colors: CustomColors = new BlackAppColor()
 }
 
 
@@ -47,6 +51,23 @@ export function getTheme(theme: AppTheme): CustomTheme {
 
 export function setAppTheme(theme: AppTheme) {
   ThemeControl.setDefaultTheme(getTheme(theme))
+}
+
+export function setAppTheme2(theme: AppTheme, window: window.Window) {
+  let t: CustomTheme = getTheme(theme)
+  ThemeControl.setDefaultTheme(t)
+
+  let sysBarProps: window.SystemBarProperties = {
+    // 以下两个属性从API Version8开始支持。
+    statusBarContentColor: t.colors?.fontPrimary?.toString(),
+    navigationBarContentColor: t.colors?.fontPrimary?.toString()
+  };
+
+  window.setWindowSystemBarProperties(sysBarProps).then(() => {
+    console.info('Succeeded in setting the system bar properties.');
+  }).catch((err: BusinessError) => {
+    console.error('Failed to set the system bar properties. Cause: ' + JSON.stringify(err));
+  });
 }
 
 
