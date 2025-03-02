@@ -1,3 +1,4 @@
+import { BreakpointModel } from 'base/src/main/ets/constans/BreakpointModel';
 import { BreakpointConstants } from './BreakpointConstants';
 
 export class BreakpointType<T> {
@@ -9,6 +10,10 @@ export class BreakpointType<T> {
     this.sm = sm;
     this.md = md;
     this.lg = lg;
+  }
+
+  getValue2(currentBreakpoint: BreakpointModel): T {
+    return this.getValue(currentBreakpoint.breakpoint)
   }
 
   getValue(currentBreakpoint: string): T {

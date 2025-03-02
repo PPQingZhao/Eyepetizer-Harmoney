@@ -5,6 +5,7 @@ import { LengthMetrics } from '@kit.ArkUI'
 import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window'
 import { WindowArea } from 'base'
 import { TabInfo, TabModel } from 'ui'
+import { BreakpointType } from 'base/src/main/ets/constans/BreakpointType'
 
 @Preview
 @ComponentV2
@@ -13,12 +14,12 @@ export struct TabContentView {
   @Local curBreakpoint: BreakpointModel = getBreakpointModelByAppStorage()
   theme: CustomTheme = new DefaultAppTheme()
   windowArea: WindowArea = getWindowAreaByAppStorage()
-  tabController: TabsController = new TabsController()
   curTabModel: TabModel<TabInfo> = this.tabContentViewModel.tabModels[0]
   swiperController: SwiperController = new SwiperController()
 
   aboutToAppear(): void {
-    this.curTabModel.isSelected = true
+    this.updateTab(this.tabContentViewModel.tabModels[0])
+    this.swiperController.changeIndex(0)
   }
 
   onWillApplyTheme(theme: Theme): void {
@@ -66,7 +67,7 @@ export struct TabContentView {
       Text(tabModel.tabInfo.name)
         .fontColor(tabModel.isSelected ? this.theme.colors?.fontOnPrimary : this.theme.colors?.fontPrimary)
         .scale({ x: tabModel.isSelected ? 1.2 : 1, y: tabModel.isSelected ? 1.2 : 1 })
-        .fontSize(14)
+        .fontSize(new BreakpointType(14, 16, 16).getValue2(this.curBreakpoint))
         .onClick(() => {
           this.updateTab(tabModel)
           this.swiperController.changeIndex(index)
@@ -80,13 +81,16 @@ export struct TabContentView {
     Stack() {
       RelativeContainer() {
         Image($r('[ui].media.logo_eyepetizer'))
-          .width('20%')
+          .width(new BreakpointType('20%', '15%', '12%').getValue2(this.curBreakpoint))
           .objectFit(ImageFit.Contain)
-          .margin({ start: LengthMetrics.vp(18) })
+          .aspectRatio(435 / 87)
+          .margin({
+            start: new BreakpointType(LengthMetrics.vp(15), LengthMetrics.vp(18),
+              LengthMetrics.vp(10)).getValue2(this.curBreakpoint)
+          })
           .alignRules({
-            top: { anchor: 'title_tab', align: VerticalAlign.Top },
-            bottom: { anchor: 'title_tab', align: VerticalAlign.Bottom },
-            start: { anchor: '__container__', align: HorizontalAlign.Start }
+            start: { anchor: '__container__', align: HorizontalAlign.Start },
+            center: { anchor: '__container__', align: VerticalAlign.Center }
           })
 
         Row({ space: 8 }) {
@@ -97,8 +101,10 @@ export struct TabContentView {
         .width('40%')
         .justifyContent(FlexAlign.End)
         .height('100%')
-        .id('title_tab')
-        .margin({ end: LengthMetrics.vp(20) })
+        .margin({
+          end: new BreakpointType(LengthMetrics.vp(20), LengthMetrics.vp(25),
+            LengthMetrics.vp(30)).getValue2(this.curBreakpoint)
+        })
         .alignRules({
           top: { anchor: '__container__', align: VerticalAlign.Top },
           bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
@@ -106,7 +112,7 @@ export struct TabContentView {
         })
       }
       .width('100%')
-      .height('4.5%')
+      .height(new BreakpointType('4.5%', '5%', '5%').getValue2(this.curBreakpoint))
     }.padding({ top: px2vp(this.windowArea.statusBarHeight) })
     .backgroundColor(this.theme.colors?.backgroundPrimary)
   }
