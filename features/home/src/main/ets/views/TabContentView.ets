@@ -1,4 +1,4 @@
-import { TabContentViewModel } from '../viewModel/TabContentViewModel'
+import { MetroItemType, TabContentViewModel } from '../viewModel/TabContentViewModel'
 import { BreakpointModel, getBreakpointModelByAppStorage } from 'base/src/main/ets/constans/BreakpointModel'
 import { DefaultAppTheme } from 'ui/src/main/ets/theme/WithDynamicThemeView'
 import { LengthMetrics } from '@kit.ArkUI'
@@ -6,7 +6,8 @@ import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window'
 import { WindowArea } from 'base'
 import { TabInfo, TabModel } from 'ui'
 import { BreakpointType } from 'base/src/main/ets/constans/BreakpointType'
-import { MetroLargeVideoItemView, MetroLargeVideoItemViewModel } from 'ui/src/main/ets/view/MetroLargeVideoItemView'
+import { MetroSmallVideoItemView2 } from 'ui/src/main/ets/view/MetroSmallVideoItemView'
+import { MetroLargeVideoItemView } from 'ui/src/main/ets/view/MetroLargeVideoItemView'
 
 @Preview
 @ComponentV2
@@ -32,7 +33,8 @@ export struct TabContentView {
     Column() {
       this.TitleTabBuilder()
       this.contentPageBuilder()
-    }
+    }.width('100%')
+    .height('100%')
   }
 
   @Builder
@@ -40,17 +42,23 @@ export struct TabContentView {
     Swiper(this.swiperController) {
       LazyForEach(this.tabContentViewModel.tabDataSource, (item: TabModel<TabInfo>) => {
         WaterFlow() {
-          LazyForEach(this.tabContentViewModel.dataSources, (item: MetroLargeVideoItemViewModel, index: number) => {
+          LazyForEach(this.tabContentViewModel.dataSources, (item: MetroItemType, index: number) => {
             FlowItem() {
-              MetroLargeVideoItemView({ viewModel: item })
+              if ('large' === item.getItemType()) {
+                MetroLargeVideoItemView({ viewModel: item })
+              } else if ('small' === item.getItemType()) {
+                MetroSmallVideoItemView2({ viewModel: item })
+              }
             }
             .width('100%')
+            .height('auto')
           })
         }
         .columnsTemplate(new BreakpointType('1fr', '1fr 1fr', '1fr 1fr 1fr').getValue2(this.curBreakpoint))
         .width('100%')
         .height('100%')
         .rowsGap(12)
+        .columnsGap(8)
       })
     }
     .width('100%')

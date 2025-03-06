@@ -1,6 +1,7 @@
 import { TabInfo, TabModel } from 'ui';
 import { createTabModel } from 'ui/src/main/ets/tab/TabModel';
-import { MetroLargeVideoItemViewModel } from 'ui/src/main/ets/view/MetroLargeVideoItemView';
+import { MetroVideoItemViewModel } from 'ui/src/main/ets/view/MetroLargeVideoItemView';
+import { ItemType } from 'ui/src/main/ets/utils/Item';
 
 @ObservedV2
 export class TabContentViewModel {
@@ -12,13 +13,13 @@ export class TabContentViewModel {
   dataSources: MetroDataSource
 
   constructor() {
-    let dataArr: MetroLargeVideoItemViewModel[] = []
+    let dataArr: MetroItemType[] = []
     for (let index = 0; index < 100; index++) {
       dataArr[index] =
-        new MetroLargeVideoItemViewModel('', '', index % 2 == 0 ? '大概多少空间埃及共和国开始就看到技术开发健康减肥' :
+        new MetroItemType('', '', index % 2 == 0 ? '大概多少空间埃及共和国开始就看到技术开发健康减肥' :
           '就是分红i很疯狂都快散架了可见度立刻就大家拉萨解放了',
           '全球广告精选 ' + index,
-          '#广告', '05:34'
+          '#广告', '05:34', index % 3 == 0 ? 'large' : 'small'
         )
     }
 
@@ -51,9 +52,9 @@ export class TabDataSource implements IDataSource {
 }
 
 export class MetroDataSource implements IDataSource {
-  private dataList: MetroLargeVideoItemViewModel[]
+  private dataList: MetroVideoItemViewModel[]
 
-  constructor(tabModels: MetroLargeVideoItemViewModel[]) {
+  constructor(tabModels: MetroVideoItemViewModel[]) {
     this.dataList = tabModels
   }
 
@@ -61,7 +62,7 @@ export class MetroDataSource implements IDataSource {
     return this.dataList.length
   }
 
-  getData(index: number): MetroLargeVideoItemViewModel {
+  getData(index: number): MetroVideoItemViewModel {
     return this.dataList[index]
   }
 
@@ -69,5 +70,25 @@ export class MetroDataSource implements IDataSource {
   }
 
   unregisterDataChangeListener(listener: DataChangeListener): void {
+  }
+}
+
+export class MetroItemType extends MetroVideoItemViewModel implements ItemType {
+  private itemType: string = ''
+
+  constructor(cover: string = '', avatar: string = '', title: string = '', nickName: string = '', tag: string = '',
+    duration: string = '', type: string) {
+    super();
+    this.cover = cover
+    this.avatar = avatar
+    this.title = title
+    this.nickName = nickName
+    this.tag = tag
+    this.duration = duration
+    this.itemType = type
+  }
+
+  getItemType(): string {
+    return this.itemType
   }
 }
