@@ -6,6 +6,7 @@ import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window'
 import { WindowArea } from 'base'
 import { TabInfo, TabModel } from 'ui'
 import { BreakpointType } from 'base/src/main/ets/constans/BreakpointType'
+import { MetroLargeVideoItemView, MetroLargeVideoItemViewModel } from 'ui/src/main/ets/view/MetroLargeVideoItemView'
 
 @Preview
 @ComponentV2
@@ -18,8 +19,9 @@ export struct TabContentView {
   swiperController: SwiperController = new SwiperController()
 
   aboutToAppear(): void {
-    this.updateTab(this.tabContentViewModel.tabModels[0])
-    this.swiperController.changeIndex(0)
+    let initPage = 0
+    this.updateTab(this.tabContentViewModel.tabModels[initPage])
+    this.swiperController.changeIndex(initPage)
   }
 
   onWillApplyTheme(theme: Theme): void {
@@ -37,12 +39,18 @@ export struct TabContentView {
   contentPageBuilder() {
     Swiper(this.swiperController) {
       LazyForEach(this.tabContentViewModel.tabDataSource, (item: TabModel<TabInfo>) => {
-        Text(item.tabInfo.name)
-          .width('100%')
-          .height('100%')
-          .fontColor(this.theme.colors?.fontPrimary)
-          .backgroundColor(Color.Blue)
-          .textAlign(TextAlign.Center)
+        WaterFlow() {
+          LazyForEach(this.tabContentViewModel.dataSources, (item: MetroLargeVideoItemViewModel, index: number) => {
+            FlowItem() {
+              MetroLargeVideoItemView({ viewModel: item })
+            }
+            .width('100%')
+          })
+        }
+        .columnsTemplate(new BreakpointType('1fr', '1fr 1fr', '1fr 1fr 1fr').getValue2(this.curBreakpoint))
+        .width('100%')
+        .height('100%')
+        .rowsGap(12)
       })
     }
     .width('100%')
@@ -63,57 +71,64 @@ export struct TabContentView {
 
   @Builder
   tabBuilder(tabModel: TabModel<TabInfo>, index: number) {
-    Stack() {
-      Text(tabModel.tabInfo.name)
-        .fontColor(tabModel.isSelected ? this.theme.colors?.fontOnPrimary : this.theme.colors?.fontPrimary)
-        .scale({ x: tabModel.isSelected ? 1.2 : 1, y: tabModel.isSelected ? 1.2 : 1 })
-        .fontSize(new BreakpointType(14, 16, 16).getValue2(this.curBreakpoint))
-        .onClick(() => {
-          this.updateTab(tabModel)
-          this.swiperController.changeIndex(index)
-        })
-    }.height('100%')
-    .aspectRatio(1)
+    Text(tabModel.tabInfo.name)
+      .fontColor(tabModel.isSelected ? this.theme.colors?.fontOnPrimary : this.theme.colors?.fontPrimary)
+      .scale({ x: tabModel.isSelected ? 1.2 : 1, y: tabModel.isSelected ? 1.2 : 1 })
+      .fontSize(new BreakpointType(14, 16, 16).getValue2(this.curBreakpoint))
+      .onClick(() => {
+        this.updateTab(tabModel)
+        this.swiperController.changeIndex(index)
+      })
   }
 
   @Builder
   TitleTabBuilder() {
-    Stack() {
-      RelativeContainer() {
-        Image($r('[ui].media.logo_eyepetizer'))
-          .width(new BreakpointType('20%', '15%', '12%').getValue2(this.curBreakpoint))
-          .objectFit(ImageFit.Contain)
-          .aspectRatio(435 / 87)
-          .margin({
-            start: new BreakpointType(LengthMetrics.vp(15), LengthMetrics.vp(18),
-              LengthMetrics.vp(10)).getValue2(this.curBreakpoint)
-          })
-          .alignRules({
-            start: { anchor: '__container__', align: HorizontalAlign.Start },
-            center: { anchor: '__container__', align: VerticalAlign.Center }
-          })
-
-        Row({ space: 8 }) {
-          ForEach(this.tabContentViewModel.tabModels, (item: TabModel<TabInfo>, index: number) => {
-            this.tabBuilder(item, index)
-          })
-        }
-        .width('40%')
-        .justifyContent(FlexAlign.End)
-        .height('100%')
+    RelativeContainer() {
+      // logo
+      Image($r('[ui].media.logo_eyepetizer'))
+        .width(new BreakpointType('20%', '15%', '12%').getValue2(this.curBreakpoint))
+        .objectFit(ImageFit.Contain)
+        .aspectRatio(435 / 87)
+        .height('auto')
+        .id('image')
         .margin({
-          end: new BreakpointType(LengthMetrics.vp(20), LengthMetrics.vp(25),
-            LengthMetrics.vp(30)).getValue2(this.curBreakpoint)
+          start: new BreakpointType(LengthMetrics.vp(15), LengthMetrics.vp(18),
+            LengthMetrics.vp(10)).getValue2(this.curBreakpoint)
         })
         .alignRules({
-          top: { anchor: '__container__', align: VerticalAlign.Top },
-          bottom: { anchor: '__container__', align: VerticalAlign.Bottom },
-          end: { anchor: '__container__', align: HorizontalAlign.End }
+          top: { anchor: 'title_bar', align: VerticalAlign.Top },
+          bottom: { anchor: 'title_bar', align: VerticalAlign.Bottom },
+          start: { anchor: '__container__', align: HorizontalAlign.Start },
+        })
+
+      // title bar
+      Row({ space: 10 }) {
+        ForEach(this.tabContentViewModel.tabModels, (item: TabModel<TabInfo>, index: number) => {
+          this.tabBuilder(item, index)
         })
       }
-      .width('100%')
-      .height(new BreakpointType('4.5%', '5%', '5%').getValue2(this.curBreakpoint))
-    }.padding({ top: px2vp(this.windowArea.statusBarHeight) })
+      .id('title_bar')
+      .width('auto')
+      .justifyContent(FlexAlign.End)
+      .alignItems(VerticalAlign.Center)
+      .height('auto')
+      .padding({
+        start: new BreakpointType(LengthMetrics.vp(20), LengthMetrics.vp(25),
+          LengthMetrics.vp(30)).getValue2(this.curBreakpoint),
+        top: new BreakpointType(LengthMetrics.vp(8), LengthMetrics.vp(12),
+          LengthMetrics.vp(15)).getValue2(this.curBreakpoint),
+        bottom: new BreakpointType(LengthMetrics.vp(8), LengthMetrics.vp(12),
+          LengthMetrics.vp(15)).getValue2(this.curBreakpoint),
+        end: new BreakpointType(LengthMetrics.vp(20), LengthMetrics.vp(25),
+          LengthMetrics.vp(30)).getValue2(this.curBreakpoint)
+      })
+      .alignRules({
+        end: { anchor: '__container__', align: HorizontalAlign.End }
+      })
+    }
+    .width('100%')
+    .padding({ top: px2vp(this.windowArea.statusBarHeight) })
+    .height('auto')
     .backgroundColor(this.theme.colors?.backgroundPrimary)
   }
 }

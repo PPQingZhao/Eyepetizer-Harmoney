@@ -3,7 +3,7 @@ import { BusinessError } from '@kit.BasicServicesKit'
 
 class DefaultAppColor implements CustomColors {
   fontPrimary: ResourceColor | undefined = Color.White
-  fontOnPrimary : ResourceColor | undefined = '#ff736e6e'
+  fontOnPrimary : ResourceColor | undefined = '#ff066bc4'
   backgroundPrimary: ResourceColor | undefined = Color.Black
 }
 
