@@ -81,7 +81,12 @@ export struct TabContentView {
   tabBuilder(tabModel: TabModel<TabInfo>, index: number) {
     Text(tabModel.tabInfo.name)
       .fontColor(tabModel.isSelected ? this.theme.colors?.fontOnPrimary : this.theme.colors?.fontPrimary)
-      .fontSize(tabModel.isSelected ? '15fp' : '13fp')
+      .scale({
+        x: tabModel.isSelected ? 1.2 : 1,
+        y: tabModel.isSelected ? 1.2 : 1,
+        centerY: tabModel.isSelected ? '60%' : '50%' // 缩放中心点
+      })
+      .fontSize(new BreakpointType(14, 16, 16).getValue2(this.curBreakpoint))
       .textAlign(TextAlign.Center)
       .onClick(() => {
         this.updateTab(tabModel)
