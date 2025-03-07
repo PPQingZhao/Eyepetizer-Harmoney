@@ -81,8 +81,8 @@ export struct TabContentView {
   tabBuilder(tabModel: TabModel<TabInfo>, index: number) {
     Text(tabModel.tabInfo.name)
       .fontColor(tabModel.isSelected ? this.theme.colors?.fontOnPrimary : this.theme.colors?.fontPrimary)
-      .scale({ x: tabModel.isSelected ? 1.2 : 1, y: tabModel.isSelected ? 1.2 : 1 })
-      .fontSize(new BreakpointType(14, 16, 16).getValue2(this.curBreakpoint))
+      .fontSize(tabModel.isSelected ? '15fp' : '13fp')
+      .textAlign(TextAlign.Center)
       .onClick(() => {
         this.updateTab(tabModel)
         this.swiperController.changeIndex(index)
@@ -118,7 +118,7 @@ export struct TabContentView {
       .id('title_bar')
       .width('auto')
       .justifyContent(FlexAlign.End)
-      .alignItems(VerticalAlign.Center)
+      .alignItems(VerticalAlign.Bottom)
       .height('auto')
       .padding({
         start: new BreakpointType(LengthMetrics.vp(20), LengthMetrics.vp(25),
