@@ -1,7 +1,9 @@
 import { TabInfo, TabModel } from 'ui';
 import { createTabModel } from 'ui/src/main/ets/tab/TabModel';
 import { MetroVideoItemViewModel } from 'ui/src/main/ets/view/MetroLargeVideoItemView';
+import { MetroSwiperItemViewModel } from 'ui/src/main/ets/view/MetroSwiperItemView';
 import { ItemType } from 'ui/src/main/ets/utils/Item';
+import { SimpleDataSource } from 'ui/src/main/ets/utils/IDataSource';
 
 @ObservedV2
 export class TabContentViewModel {
@@ -10,12 +12,13 @@ export class TabContentViewModel {
     createTabModel($r('app.string.follow')),
     createTabModel($r('app.string.daily')),
   ]
-  dataSources: MetroDataSource
+  dataSources: SimpleDataSource<ItemType>
 
   constructor() {
-    let dataArr: MetroItemType[] = []
+    let dataArr: ItemType[] = []
     for (let index = 0; index < 100; index++) {
-      dataArr[index] =
+
+      dataArr[index] = index == 1 ? new MetroSwiperItemType(['0', '1', '2', '3', '4', '5']) :
         new MetroItemType('', '', index % 2 == 0 ? '大概多少空间埃及共和国开始就看到技术开发健康减肥' :
           '就是分红i很疯狂都快散架了可见度立刻就大家拉萨解放了',
           '全球广告精选 ' + index,
@@ -23,54 +26,10 @@ export class TabContentViewModel {
         )
     }
 
-    this.dataSources = new MetroDataSource(dataArr)
+    this.dataSources = new SimpleDataSource<ItemType>(dataArr)
   }
 
-  tabDataSource: TabDataSource = new TabDataSource(this.tabModels)
-}
-
-export class TabDataSource implements IDataSource {
-  private tabModels: TabModel<TabInfo>[]
-
-  constructor(tabModels: TabModel<TabInfo>[]) {
-    this.tabModels = tabModels
-  }
-
-  totalCount(): number {
-    return this.tabModels.length
-  }
-
-  getData(index: number): TabModel<TabInfo> {
-    return this.tabModels[index]
-  }
-
-  registerDataChangeListener(listener: DataChangeListener): void {
-  }
-
-  unregisterDataChangeListener(listener: DataChangeListener): void {
-  }
-}
-
-export class MetroDataSource implements IDataSource {
-  private dataList: MetroVideoItemViewModel[]
-
-  constructor(tabModels: MetroVideoItemViewModel[]) {
-    this.dataList = tabModels
-  }
-
-  totalCount(): number {
-    return this.dataList.length
-  }
-
-  getData(index: number): MetroVideoItemViewModel {
-    return this.dataList[index]
-  }
-
-  registerDataChangeListener(listener: DataChangeListener): void {
-  }
-
-  unregisterDataChangeListener(listener: DataChangeListener): void {
-  }
+  tabDataSource: SimpleDataSource<TabModel<TabInfo>> = new SimpleDataSource<TabModel<TabInfo>>(this.tabModels)
 }
 
 export class MetroItemType extends MetroVideoItemViewModel implements ItemType {
@@ -90,5 +49,11 @@ export class MetroItemType extends MetroVideoItemViewModel implements ItemType {
 
   getItemType(): string {
     return this.itemType
+  }
+}
+
+export class MetroSwiperItemType extends MetroSwiperItemViewModel implements ItemType {
+  getItemType(): string {
+    return 'swiper'
   }
 }

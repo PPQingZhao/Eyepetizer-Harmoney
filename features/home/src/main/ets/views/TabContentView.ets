@@ -1,4 +1,4 @@
-import { MetroItemType, TabContentViewModel } from '../viewModel/TabContentViewModel'
+import { TabContentViewModel } from '../viewModel/TabContentViewModel'
 import { BreakpointModel, getBreakpointModelByAppStorage } from 'base/src/main/ets/constans/BreakpointModel'
 import { DefaultAppTheme } from 'ui/src/main/ets/theme/WithDynamicThemeView'
 import { LengthMetrics } from '@kit.ArkUI'
@@ -7,7 +7,9 @@ import { WindowArea } from 'base'
 import { TabInfo, TabModel } from 'ui'
 import { BreakpointType } from 'base/src/main/ets/constans/BreakpointType'
 import { MetroSmallVideoItemView2 } from 'ui/src/main/ets/view/MetroSmallVideoItemView'
-import { MetroLargeVideoItemView } from 'ui/src/main/ets/view/MetroLargeVideoItemView'
+import { MetroLargeVideoItemView, MetroVideoItemViewModel } from 'ui/src/main/ets/view/MetroLargeVideoItemView'
+import { MetroSwiperItemView, MetroSwiperItemViewModel } from 'ui/src/main/ets/view/MetroSwiperItemView'
+import { ItemType } from 'ui/src/main/ets/utils/Item'
 
 @Preview
 @ComponentV2
@@ -42,12 +44,14 @@ export struct TabContentView {
     Swiper(this.swiperController) {
       LazyForEach(this.tabContentViewModel.tabDataSource, (item: TabModel<TabInfo>) => {
         WaterFlow() {
-          LazyForEach(this.tabContentViewModel.dataSources, (item: MetroItemType, index: number) => {
+          LazyForEach(this.tabContentViewModel.dataSources, (item: ItemType, index: number) => {
             FlowItem() {
-              if ('large' === item.getItemType()) {
-                MetroLargeVideoItemView({ viewModel: item })
-              } else if ('small' === item.getItemType()) {
-                MetroSmallVideoItemView2({ viewModel: item })
+              if ('large' === item.getItemType() && item instanceof MetroVideoItemViewModel) {
+                MetroLargeVideoItemView({ viewModel: item as MetroVideoItemViewModel })
+              } else if ('small' === item.getItemType() && item instanceof MetroVideoItemViewModel) {
+                MetroSmallVideoItemView2({ viewModel: item as MetroVideoItemViewModel })
+              } else if ('swiper' === item.getItemType() && item instanceof MetroSwiperItemViewModel) {
+                MetroSwiperItemView({ viewModel: item as MetroSwiperItemViewModel })
               }
             }
             .width('100%')
@@ -82,7 +86,7 @@ export struct TabContentView {
     Text(tabModel.tabInfo.name)
       .fontColor(tabModel.isSelected ? this.theme.colors?.fontOnPrimary : this.theme.colors?.fontPrimary)
       .scale({
-        x: tabModel.isSelected ? 1.2 : 1,
+        x: tabModel.isSelected ? 1 : 1,
         y: tabModel.isSelected ? 1.2 : 1,
         centerY: tabModel.isSelected ? '60%' : '50%' // 缩放中心点
       })
