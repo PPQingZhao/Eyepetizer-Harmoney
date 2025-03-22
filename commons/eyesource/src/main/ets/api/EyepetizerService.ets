@@ -18,41 +18,37 @@ const BASE_URL_GET_USER_INFO = `${URL_BASE}v1/user/center/get_user_info`
  * 日报
  */
 export function dailyIssue() {
-  return httpPost<EyeResponse<string>>('http://api.eyepetizer.net/v1/card/page/get_page',
-    { interceptors: [authHeaderInterceptor] },
-    { 'page_label': 'daily_issue', 'page_type': 'card' })
+  return getPage('daily_issue')
 }
 
 /**
  * 推荐
  */
 export function recommend() {
-  return httpPost<EyeResponse<string>>('http://api.eyepetizer.net/v1/card/page/get_page',
-    { interceptors: [authHeaderInterceptor] },
-    { 'page_label': 'recommend', 'page_type': 'card' })
+  return getPage('recommend')
 }
 
 // 关注
 export function follow() {
-  return httpPost<EyeResponse<string>>('http://api.eyepetizer.net/v1/card/page/get_page',
-    { interceptors: [authHeaderInterceptor] },
-    { 'page_label': 'follow', 'page_type': 'card' })
+  return getPage('follow')
 }
 
 /**
  * 发现
  */
 export function discoverV2() {
-  return httpPost<EyeResponse<string>>('http://api.eyepetizer.net/v1/card/page/get_page',
-    { interceptors: [authHeaderInterceptor] },
-    { 'page_label': 'discover_v2', 'page_type': 'card' })
+  return getPage('discover_v2')
 }
 
 /**
  * 广场
  */
 export function community() {
+  return getPage('community')
+}
+
+function getPage(page_label: string): Promise<EyeResponse<string>> {
   return httpPost<EyeResponse<string>>('http://api.eyepetizer.net/v1/card/page/get_page',
     { interceptors: [authHeaderInterceptor] },
-    { 'page_label': 'community', 'page_type': 'card' })
+    { 'page_label': page_label, 'page_type': 'card' })
 }
