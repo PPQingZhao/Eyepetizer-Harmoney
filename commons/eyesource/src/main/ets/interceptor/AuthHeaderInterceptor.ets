@@ -34,11 +34,12 @@ class AuthHeaderInterceptor implements rcp.Interceptor {
     }
 
     // ② token失效则获取token
-    const jsonObj = JSON.parse(response.toString(),)
+    const jsonObj = JSON.parse(response.toString())
     if (!jsonObj) {
       return response
     }
     let eyeResponse: EyeResponse<undefined> = jsonObj as EyeResponse<undefined>
+    // code = 60000 表示无效token
     if (eyeResponse.code != 60000) {
       return response
     }
@@ -66,7 +67,7 @@ class AuthHeaderInterceptor implements rcp.Interceptor {
   }
 
   /**
-   * 获取token
+   * 获取token 更新私有header
    */
   async processAuthTokenRequest(session: rcp.Session, next: rcp.RequestHandler) {
     const curTs = getTs()

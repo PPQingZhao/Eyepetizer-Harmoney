@@ -1,5 +1,6 @@
 import { authHeaderInterceptor } from 'eyesource/src/main/ets/interceptor/AuthHeaderInterceptor'
 import { httpPost } from 'base/src/main/ets/http/Http'
+import { EyeResponse } from 'eyesource/src/main/ets/bean/EyeResponse'
 
 const URL_BASE = 'http://api.eyepetizer.net/'
 /**
@@ -17,7 +18,7 @@ const BASE_URL_GET_USER_INFO = `${URL_BASE}v1/user/center/get_user_info`
  * 日报
  */
 export function dailyIssue() {
-  httpPost('http://api.eyepetizer.net/v1/card/page/get_page',
+  return httpPost<EyeResponse<string>>('http://api.eyepetizer.net/v1/card/page/get_page',
     { interceptors: [authHeaderInterceptor] },
     { 'page_label': 'daily_issue', 'page_type': 'card' })
 }
@@ -26,14 +27,14 @@ export function dailyIssue() {
  * 推荐
  */
 export function recommend() {
-  httpPost('http://api.eyepetizer.net/v1/card/page/get_page',
+  return httpPost<EyeResponse<string>>('http://api.eyepetizer.net/v1/card/page/get_page',
     { interceptors: [authHeaderInterceptor] },
     { 'page_label': 'recommend', 'page_type': 'card' })
 }
 
 // 关注
 export function follow() {
-  httpPost('http://api.eyepetizer.net/v1/card/page/get_page',
+  return httpPost<EyeResponse<string>>('http://api.eyepetizer.net/v1/card/page/get_page',
     { interceptors: [authHeaderInterceptor] },
     { 'page_label': 'follow', 'page_type': 'card' })
 }
@@ -42,7 +43,7 @@ export function follow() {
  * 发现
  */
 export function discoverV2() {
-  httpPost('http://api.eyepetizer.net/v1/card/page/get_page',
+  return httpPost<EyeResponse<string>>('http://api.eyepetizer.net/v1/card/page/get_page',
     { interceptors: [authHeaderInterceptor] },
     { 'page_label': 'discover_v2', 'page_type': 'card' })
 }
@@ -51,7 +52,7 @@ export function discoverV2() {
  * 广场
  */
 export function community() {
-  httpPost('http://api.eyepetizer.net/v1/card/page/get_page',
+  return httpPost<EyeResponse<string>>('http://api.eyepetizer.net/v1/card/page/get_page',
     { interceptors: [authHeaderInterceptor] },
     { 'page_label': 'community', 'page_type': 'card' })
 }

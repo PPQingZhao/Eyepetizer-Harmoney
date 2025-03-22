@@ -1,24 +1,47 @@
 import { rcp } from '@kit.RemoteCommunicationKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-export function httpGet(url: rcp.URLOrString, config?: rcp.SessionConfiguration) {
-  const session = rcp.createSession(config)
-  session.get(url).then((response) => {
-    console.info(`httpGet succeed: ${response.statusCode} ${response}`)
-    session.close()
-  }).catch((err: BusinessError) => {
-    console.error(`httpGet error:  ${err.code}  ${err.message}`)
-    session.close()
-  })
+/**
+ * GET 请求
+ * @param url
+ * @param config
+ * @returns
+ */
+export function httpGet<Response>(url: rcp.URLOrString, config?: rcp.SessionConfiguration): Promise<Response> {
+  return httpRequest((session: rcp.Session) => {
+    return session.get(url)
+  }, config)
 }
 
-export function httpPost(url: rcp.URLOrString, config?: rcp.SessionConfiguration, content?: rcp.RequestContent) {
-  const session = rcp.createSession(config)
-  session.post(url, content).then((response) => {
-    console.info(`httpPost succeed: ${response.statusCode} ${response}`)
-    session.close()
-  }).catch((err: BusinessError) => {
-    console.error(`httpPost error:  ${err.code}  ${err.message}`)
-    session.close()
+/**
+ *  POST 请求
+ * @param url
+ * @param config
+ * @param content
+ * @returns
+ */
+export function httpPost<Response>(
+  url: rcp.URLOrString,
+  config?: rcp.SessionConfiguration,
+  content?: rcp.RequestContent): Promise<Response> {
+  return httpRequest((session: rcp.Session) => {
+    return session.post(url, content)
+  }, config)
+}
+
+function httpRequest<Response>(
+  request: (session: rcp.Session) => Promise<rcp.Response>,
+  config?: rcp.SessionConfiguration
+): Promise<Response> {
+  return new Promise<Response>((resolve, reject) => {
+    const session = rcp.createSession(config)
+    request(session).then(res => {
+      const result = JSON.parse(res.toString()!!) as Response
+      resolve(result)
+      session.close()
+    }).catch((err: BusinessError) => {
+      reject(err)
+      session.close()
+    })
   })
 }
