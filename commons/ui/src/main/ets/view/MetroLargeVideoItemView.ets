@@ -1,4 +1,4 @@
-import { LengthMetrics, Theme } from '@kit.ArkUI'
+import { LengthMetrics } from '@kit.ArkUI'
 
 @ObservedV2
 export class MetroVideoItemViewModel {
@@ -33,11 +33,7 @@ export struct MetroLargeVideoItemView {
   @Param viewModel: MetroVideoItemViewModel = new MetroVideoItemViewModel('', '',
     '范德萨会更加开放的是个JFK很多时间开个会的功夫撒海空军的施工计划开发的话就赶快个人佛第四个家里',
     '全球广告精选', '#广告', '04:25')
-  private theme?: CustomTheme
-
-  onWillApplyTheme(theme: Theme): void {
-    this.theme = this.theme
-  }
+  @Param theme?: CustomTheme = undefined
 
   build() {
     RelativeContainer() {

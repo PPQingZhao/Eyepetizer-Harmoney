@@ -1,4 +1,4 @@
-import { util } from "@kit.ArkTS";
+import { util } from '@kit.ArkTS';
 
 @Builder
 export function SquarePageBuilder(name: String, param: Object) {
@@ -21,6 +21,7 @@ export struct SquarePage {
           Text(this.message)
             .fontSize(50)
             .fontWeight(FontWeight.Bold)
+            .fontColor(Color.Red)
         }
         .width('100%')
       }

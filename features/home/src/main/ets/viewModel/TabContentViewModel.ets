@@ -8,9 +8,9 @@ import { SimpleDataSource } from 'ui/src/main/ets/utils/IDataSource';
 @ObservedV2
 export class TabContentViewModel {
   tabModels: TabModel<TabInfo>[] = [
-    createTabModel($r('app.string.recommend')),
-    createTabModel($r('app.string.follow')),
-    createTabModel($r('app.string.daily')),
+    createTabModel($r('[ui].string.recommend')),
+    createTabModel($r('[ui].string.follow')),
+    createTabModel($r('[ui].string.daily')),
   ]
   dataSources: SimpleDataSource<ItemType>
 

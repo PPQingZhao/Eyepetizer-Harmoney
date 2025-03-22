@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "base",
+    "name": "eyesource",
     "type": "shared",
     "description": "$string:shared_desc",
     "deviceTypes": [
@@ -9,6 +9,11 @@
       "2in1"
     ],
     "deliveryWithInstall": true,
-    "pages": "$profile:main_pages"
+    "pages": "$profile:main_pages",
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.INTERNET"
+      }
+    ]
   }
 }

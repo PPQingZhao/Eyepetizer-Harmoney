@@ -6,10 +6,11 @@ import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window'
 import { WindowArea } from 'base'
 import { TabInfo, TabModel } from 'ui'
 import { BreakpointType } from 'base/src/main/ets/constans/BreakpointType'
-import { MetroSmallVideoItemView2 } from 'ui/src/main/ets/view/MetroSmallVideoItemView'
+import { MetroSmallVideoItemView } from 'ui/src/main/ets/view/MetroSmallVideoItemView'
 import { MetroLargeVideoItemView, MetroVideoItemViewModel } from 'ui/src/main/ets/view/MetroLargeVideoItemView'
 import { MetroSwiperItemView, MetroSwiperItemViewModel } from 'ui/src/main/ets/view/MetroSwiperItemView'
 import { ItemType } from 'ui/src/main/ets/utils/Item'
+
 
 @Preview
 @ComponentV2
@@ -37,6 +38,7 @@ export struct TabContentView {
       this.contentPageBuilder()
     }.width('100%')
     .height('100%')
+    .backgroundColor(this.theme.colors?.backgroundPrimary)
   }
 
   @Builder
@@ -47,11 +49,12 @@ export struct TabContentView {
           LazyForEach(this.tabContentViewModel.dataSources, (item: ItemType, index: number) => {
             FlowItem() {
               if ('large' === item.getItemType() && item instanceof MetroVideoItemViewModel) {
-                MetroLargeVideoItemView({ viewModel: item as MetroVideoItemViewModel })
+                MetroLargeVideoItemView({ theme: this.theme, viewModel: item as MetroVideoItemViewModel })
               } else if ('small' === item.getItemType() && item instanceof MetroVideoItemViewModel) {
-                MetroSmallVideoItemView2({ viewModel: item as MetroVideoItemViewModel })
+                MetroSmallVideoItemView({ theme: this.theme, viewModel: item as MetroVideoItemViewModel })
+                  .padding({ start: LengthMetrics.vp(10), end: LengthMetrics.vp(10) })
               } else if ('swiper' === item.getItemType() && item instanceof MetroSwiperItemViewModel) {
-                MetroSwiperItemView({ viewModel: item as MetroSwiperItemViewModel })
+                MetroSwiperItemView({ theme: this.theme, viewModel: item as MetroSwiperItemViewModel })
               }
             }
             .width('100%')
@@ -71,6 +74,7 @@ export struct TabContentView {
     .onAnimationStart((index: number, targetIndex: number, extraInfo: SwiperAnimationEvent) => {
       this.updateTab(this.tabContentViewModel.tabModels[targetIndex])
     })
+    .backgroundColor(Color.Transparent)
   }
 
   private updateTab(targetTabModel: TabModel<TabInfo>) {
@@ -93,6 +97,7 @@ export struct TabContentView {
       .fontSize(new BreakpointType(14, 16, 16).getValue2(this.curBreakpoint))
       .textAlign(TextAlign.Center)
       .onClick(() => {
+
         this.updateTab(tabModel)
         this.swiperController.changeIndex(index)
       })

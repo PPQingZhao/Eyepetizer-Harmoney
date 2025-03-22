@@ -1,4 +1,4 @@
-import { Home, WindowArea } from 'base';
+import { WindowArea } from 'base';
 import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window';
 import { MainViewModel } from '../viewModel/MainViewModel';
 import { RouterTabInfo, TabModel } from 'ui';
@@ -45,19 +45,23 @@ export struct MainPage {
     .aspectRatio(1)
     .clip(true)
     .onClick(() => {
-      if (tabModel.isSelected) {
-        return
-      }
-
-      let oldTabModel = this.curTabModel
-      this.curTabModel = tabModel
-
-      oldTabModel.isSelected = false
-      this.curTabModel.isSelected = true
-
-      this.mNavPushPathHelper.pushPath(tabModel.tabInfo.moduleName,
-        { name: tabModel.tabInfo.page }, { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON, animated: false })
+      this.navToTabPage(tabModel)
     })
+  }
+
+  private navToTabPage(tabModel: TabModel<RouterTabInfo>) {
+    if (tabModel.isSelected) {
+      return
+    }
+
+    let oldTabModel = this.curTabModel
+    this.curTabModel = tabModel
+
+    oldTabModel.isSelected = false
+    this.curTabModel.isSelected = true
+
+    this.mNavPushPathHelper.pushPath(tabModel.tabInfo.moduleName,
+      { name: tabModel.tabInfo.page }, { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON, animated: false })
   }
 
   @Builder
@@ -68,11 +72,8 @@ export struct MainPage {
       .hideNavBar(true)
       .layoutWeight(8)
       .onAppear(() => {
-        this.curTabModel.isSelected = true
-        this.mNavPushPathHelper.pushPath(Home.moduleName, { name: Home.HomePage },
-          { launchMode: LaunchMode.MOVE_TO_TOP_SINGLETON, animated: false })
+        this.navToTabPage(this.curTabModel)
       })
-
   }
 
   @Builder

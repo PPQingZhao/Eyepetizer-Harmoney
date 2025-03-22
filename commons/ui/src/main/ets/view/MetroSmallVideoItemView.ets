@@ -1,19 +1,8 @@
-import { LengthMetrics, Theme } from '@kit.ArkUI'
+import { LengthMetrics } from '@kit.ArkUI'
 import { MetroVideoItemViewModel } from 'ui/src/main/ets/view/MetroLargeVideoItemView'
 import { BreakpointModel, getBreakpointModelByAppStorage } from 'base/src/main/ets/constans/BreakpointModel'
 import { BreakpointType } from 'base/src/main/ets/constans/BreakpointType'
 
-
-@ComponentV2
-export struct MetroSmallVideoItemView2 {
-  @Param @Require viewModel: MetroVideoItemViewModel
-
-  build() {
-    Stack() {
-      MetroSmallVideoItemView({ viewModel: this.viewModel })
-    }.padding({ start: LengthMetrics.vp(10), end: LengthMetrics.vp(10) })
-  }
-}
 
 @Preview
 @ComponentV2
@@ -25,15 +14,12 @@ export struct MetroSmallVideoItemView {
   @Param viewModel: MetroVideoItemViewModel = new MetroVideoItemViewModel('', '',
     '范德萨会更加开放的是个JFK很多时间开个会的功夫撒海空军的施工计划开发的话就赶快个人佛第四个家里',
     '全球广告精选', '#广告', '04:25')
-  private theme?: CustomTheme
+  @Param theme?: CustomTheme = undefined
   @Local curBreakpoint: BreakpointModel = getBreakpointModelByAppStorage()
-
-  onWillApplyTheme(theme: Theme): void {
-    this.theme = this.theme
-  }
 
   build() {
     RelativeContainer() {
+
       // cover
       Image(this.viewModel.cover)
         .objectFit(ImageFit.Cover)

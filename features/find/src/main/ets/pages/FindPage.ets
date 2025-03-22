@@ -20,6 +20,7 @@ export struct FindPage {
           Text(this.message)
             .fontSize(50)
             .fontWeight(FontWeight.Bold)
+            .fontColor(Color.Red)
         }
         .width('100%')
       }

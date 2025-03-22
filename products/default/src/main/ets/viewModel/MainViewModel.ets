@@ -7,25 +7,25 @@ export class MainViewModel {
   @Trace
   tabInfos: TabModel<RouterTabInfo>[] = [
     createRouterTabModel(
-      $r('app.string.home'),
+      $r('[ui].string.home'),
       $r("app.media.ic_home"),
       $r('app.media.ic_home'),
       Home.moduleName,
       Home.HomePage),
     createRouterTabModel(
-      $r('app.string.find'),
+      $r('[ui].string.find'),
       $r('app.media.ic_find'),
       $r('app.media.ic_find'),
       Find.moduleName,
       Find.FindPage),
     createRouterTabModel(
-      $r('app.string.square'),
+      $r('[ui].string.square'),
       $r('app.media.ic_square'),
       $r('app.media.ic_square'),
       Square.moduleName,
       Square.SquarePage),
     createRouterTabModel(
-      $r('app.string.mine'),
+      $r('[ui].string.mine'),
       $r('app.media.ic_mine'),
       $r('app.media.ic_mine'),
       User.moduleName,

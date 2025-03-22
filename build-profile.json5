@@ -80,6 +80,18 @@
           ]
         }
       ]
+    },
+    {
+      "name": "eyesource",
+      "srcPath": "./commons/eyesource",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     }
   ]
 }
