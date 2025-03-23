@@ -1,6 +1,7 @@
 import { authHeaderInterceptor } from 'eyesource/src/main/ets/interceptor/AuthHeaderInterceptor'
 import { httpPost } from 'base/src/main/ets/http/Http'
 import { EyeResponse } from 'eyesource/src/main/ets/bean/EyeResponse'
+import { PageDataBean } from 'eyesource/src/main/ets/bean/PageDataBean'
 
 const URL_BASE = 'http://api.eyepetizer.net/'
 /**
@@ -47,8 +48,8 @@ export function community() {
   return getPage('community')
 }
 
-function getPage(page_label: string): Promise<EyeResponse<string>> {
-  return httpPost<EyeResponse<string>>('http://api.eyepetizer.net/v1/card/page/get_page',
+function getPage(page_label: string): Promise<EyeResponse<PageDataBean>> {
+  return httpPost<EyeResponse<PageDataBean>>('http://api.eyepetizer.net/v1/card/page/get_page',
     { interceptors: [authHeaderInterceptor] },
     { 'page_label': page_label, 'page_type': 'card' })
 }

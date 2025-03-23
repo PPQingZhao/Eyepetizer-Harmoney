@@ -1,9 +1,10 @@
-export interface  EyeResponse<Result> {
-    code: number;
-    message: Message;
-    result: Result;
+export interface EyeResponse<Result> {
+  code: number;
+  message: Message;
+  result: Result;
 }
 
-export class Message {
-
+export interface Message {
+  content: '',
+  action: ''
 }

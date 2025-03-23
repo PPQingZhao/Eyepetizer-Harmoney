@@ -7,9 +7,10 @@ import { BusinessError } from '@kit.BasicServicesKit';
  * @param config
  * @returns
  */
-export function httpGet<Response>(url: rcp.URLOrString, config?: rcp.SessionConfiguration): Promise<Response> {
+export function httpGet<Response>(url: rcp.URLOrString, config?: rcp.SessionConfiguration,
+  destination?: rcp.ResponseBodyDestination): Promise<Response> {
   return httpRequest((session: rcp.Session) => {
-    return session.get(url)
+    return session.get(url, destination)
   }, config)
 }
 
@@ -23,9 +24,9 @@ export function httpGet<Response>(url: rcp.URLOrString, config?: rcp.SessionConf
 export function httpPost<Response>(
   url: rcp.URLOrString,
   config?: rcp.SessionConfiguration,
-  content?: rcp.RequestContent): Promise<Response> {
+  content?: rcp.RequestContent, destination?: rcp.ResponseBodyDestination): Promise<Response> {
   return httpRequest((session: rcp.Session) => {
-    return session.post(url, content)
+    return session.post(url, content, destination)
   }, config)
 }
 

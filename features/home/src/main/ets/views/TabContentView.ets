@@ -10,22 +10,21 @@ import { MetroSmallVideoItemView } from 'ui/src/main/ets/view/MetroSmallVideoIte
 import { MetroLargeVideoItemView, MetroVideoItemViewModel } from 'ui/src/main/ets/view/MetroLargeVideoItemView'
 import { MetroSwiperItemView, MetroSwiperItemViewModel } from 'ui/src/main/ets/view/MetroSwiperItemView'
 import { ItemType } from 'ui/src/main/ets/utils/Item'
-
+import { recommend } from 'eyesource/src/main/ets/api/EyepetizerService'
+import { BusinessError } from '@kit.BasicServicesKit'
 
 @Preview
 @ComponentV2
 export struct TabContentView {
-  tabContentViewModel: TabContentViewModel = new TabContentViewModel()
+  @Param @Require tabContentViewModel: TabContentViewModel
   @Local curBreakpoint: BreakpointModel = getBreakpointModelByAppStorage()
   theme: CustomTheme = new DefaultAppTheme()
   windowArea: WindowArea = getWindowAreaByAppStorage()
-  curTabModel: TabModel<TabInfo> = this.tabContentViewModel.tabModels[0]
   swiperController: SwiperController = new SwiperController()
 
   aboutToAppear(): void {
     let initPage = 0
-    this.updateTab(this.tabContentViewModel.tabModels[initPage])
-    this.swiperController.changeIndex(initPage)
+    this.selectedTab(initPage)
   }
 
   onWillApplyTheme(theme: Theme): void {
@@ -72,17 +71,14 @@ export struct TabContentView {
     .height('100%')
     .loop(false)
     .onAnimationStart((index: number, targetIndex: number, extraInfo: SwiperAnimationEvent) => {
-      this.updateTab(this.tabContentViewModel.tabModels[targetIndex])
+      this.tabContentViewModel.selectedTab(targetIndex)
     })
     .backgroundColor(Color.Transparent)
   }
 
-  private updateTab(targetTabModel: TabModel<TabInfo>) {
-    let tempTabModel = this.curTabModel
-    this.curTabModel = targetTabModel
-
-    tempTabModel.isSelected = false
-    this.curTabModel.isSelected = true
+  private selectedTab(index: number) {
+    this.tabContentViewModel.selectedTab(index)
+    this.swiperController.changeIndex(index)
   }
 
   @Builder
@@ -97,9 +93,13 @@ export struct TabContentView {
       .fontSize(new BreakpointType(14, 16, 16).getValue2(this.curBreakpoint))
       .textAlign(TextAlign.Center)
       .onClick(() => {
+        recommend().then(pageData => {
+          console.info(JSON.stringify(pageData))
+        }).catch((err: BusinessError) => {
+          console.info(err.message)
+        })
 
-        this.updateTab(tabModel)
-        this.swiperController.changeIndex(index)
+        this.selectedTab(index)
       })
   }
 

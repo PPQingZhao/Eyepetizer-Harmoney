@@ -4,9 +4,10 @@ import { MetroVideoItemViewModel } from 'ui/src/main/ets/view/MetroLargeVideoIte
 import { MetroSwiperItemViewModel } from 'ui/src/main/ets/view/MetroSwiperItemView';
 import { ItemType } from 'ui/src/main/ets/utils/Item';
 import { SimpleDataSource } from 'ui/src/main/ets/utils/IDataSource';
+import { BaseNavPageViewModel } from 'ui/src/main/ets/utils/BaseNavPageViewModel';
 
 @ObservedV2
-export class TabContentViewModel {
+export class TabContentViewModel extends BaseNavPageViewModel {
   tabModels: TabModel<TabInfo>[] = [
     createTabModel($r('[ui].string.recommend')),
     createTabModel($r('[ui].string.follow')),
@@ -15,6 +16,7 @@ export class TabContentViewModel {
   dataSources: SimpleDataSource<ItemType>
 
   constructor() {
+    super();
     let dataArr: ItemType[] = []
     for (let index = 0; index < 100; index++) {
 
@@ -30,6 +32,20 @@ export class TabContentViewModel {
   }
 
   tabDataSource: SimpleDataSource<TabModel<TabInfo>> = new SimpleDataSource<TabModel<TabInfo>>(this.tabModels)
+  private curTabModel: TabModel<TabInfo> = this.tabModels[0]
+
+  selectedTab(index: number) {
+    const targetTabModel = this.tabModels[index]
+    let tempTabModel = this.curTabModel
+    this.curTabModel = targetTabModel
+
+    tempTabModel.isSelected = false
+    this.curTabModel.isSelected = true
+  }
+
+  onWillAppear(): void {
+    console.info('onWillAppear==============================>')
+  }
 }
 
 export class MetroItemType extends MetroVideoItemViewModel implements ItemType {

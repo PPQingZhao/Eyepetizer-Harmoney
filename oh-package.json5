@@ -9,5 +9,6 @@
     "base": "file:./commons/base",
     "ui": "file:./commons/ui",
     "eyesource": "file:./commons/eyesource"
-  }
+  },
+  "dynamicDependencies": {}
 }

@@ -9,7 +9,7 @@ export function getSignString(paramString1: string, paramString2: string): strin
 
 // 字符串转成字节流
 function stringToUint8Array(str: string) {
-  console.info(`ste: ${str}`)
+  // console.info(`ste: ${str}`)
   const res = new Uint8Array(buffer.from(str, 'utf-8').buffer)
   // console.info('字符串转成字节流:' + res);
   return res;
