@@ -1,12 +1,26 @@
+import { LifecycleComponent } from 'ui/src/main/ets/components/LifecycleComponent'
+import { FollowViewModel } from '../viewModel/FollowViewModel'
 
 
 @ComponentV2
 export struct Follow {
-  build() {
+  private viewModel: FollowViewModel = new FollowViewModel()
+
+  @Builder
+  private ContentBuilder() {
     Text('Follow')
       .textAlign(TextAlign.Center)
       .width('100%')
       .height('100%')
-      .fontColor(Color.Blue)
+      .fontColor(Color.Green)
+  }
+
+  build() {
+    LifecycleComponent({
+      contentParam: () => {
+        this.ContentBuilder()
+      },
+      lifecycle: this.viewModel
+    })
   }
 }

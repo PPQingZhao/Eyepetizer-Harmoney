@@ -1,6 +1,6 @@
 import { TabContentViewModel } from '../viewModel/TabContentViewModel';
 import { TabContentView } from '../views/TabContentView';
-import { LifecycleNavDestination } from 'ui/src/main/ets/utils/LifecycleNavDestination';
+import { LifecycleNavDestination } from 'ui/src/main/ets/components/LifecycleNavDestination';
 
 @Builder
 export function HomePageBuilder(name: String, param: Object) {
