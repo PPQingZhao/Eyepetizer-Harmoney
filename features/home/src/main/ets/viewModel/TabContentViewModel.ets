@@ -6,12 +6,18 @@ import { ItemType } from 'ui/src/main/ets/utils/Item';
 import { SimpleDataSource } from 'ui/src/main/ets/utils/IDataSource';
 import { BaseNavPageViewModel } from 'ui/src/main/ets/utils/BaseNavPageViewModel';
 
+export enum TabType {
+  Recommend = 'recommend',
+  Follow = 'follow',
+  DailyIssue = 'dailyIssue',
+}
+
 @ObservedV2
 export class TabContentViewModel extends BaseNavPageViewModel {
   tabModels: TabModel<TabInfo>[] = [
-    createTabModel($r('[ui].string.recommend')),
-    createTabModel($r('[ui].string.follow')),
-    createTabModel($r('[ui].string.daily')),
+    createTabModel($r('[ui].string.recommend'), TabType.Recommend),
+    createTabModel($r('[ui].string.follow'), TabType.Follow),
+    createTabModel($r('[ui].string.daily'), TabType.DailyIssue),
   ]
   dataSources: SimpleDataSource<ItemType>
 

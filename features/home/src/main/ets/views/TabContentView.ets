@@ -1,4 +1,4 @@
-import { TabContentViewModel } from '../viewModel/TabContentViewModel'
+import { TabContentViewModel, TabType } from '../viewModel/TabContentViewModel'
 import { BreakpointModel, getBreakpointModelByAppStorage } from 'base/src/main/ets/constans/BreakpointModel'
 import { DefaultAppTheme } from 'ui/src/main/ets/theme/WithDynamicThemeView'
 import { LengthMetrics } from '@kit.ArkUI'
@@ -6,12 +6,11 @@ import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window'
 import { WindowArea } from 'base'
 import { TabInfo, TabModel } from 'ui'
 import { BreakpointType } from 'base/src/main/ets/constans/BreakpointType'
-import { MetroSmallVideoItemView } from 'ui/src/main/ets/view/MetroSmallVideoItemView'
-import { MetroLargeVideoItemView, MetroVideoItemViewModel } from 'ui/src/main/ets/view/MetroLargeVideoItemView'
-import { MetroSwiperItemView, MetroSwiperItemViewModel } from 'ui/src/main/ets/view/MetroSwiperItemView'
-import { ItemType } from 'ui/src/main/ets/utils/Item'
 import { recommend } from 'eyesource/src/main/ets/api/EyepetizerService'
 import { BusinessError } from '@kit.BasicServicesKit'
+import { Recommend } from './RecommendView'
+import { Follow } from './FollowView'
+import { DailyIssue } from './DailyIssue'
 
 @Preview
 @ComponentV2
@@ -44,27 +43,13 @@ export struct TabContentView {
   contentPageBuilder() {
     Swiper(this.swiperController) {
       LazyForEach(this.tabContentViewModel.tabDataSource, (item: TabModel<TabInfo>) => {
-        WaterFlow() {
-          LazyForEach(this.tabContentViewModel.dataSources, (item: ItemType, index: number) => {
-            FlowItem() {
-              if ('large' === item.getItemType() && item instanceof MetroVideoItemViewModel) {
-                MetroLargeVideoItemView({ theme: this.theme, viewModel: item as MetroVideoItemViewModel })
-              } else if ('small' === item.getItemType() && item instanceof MetroVideoItemViewModel) {
-                MetroSmallVideoItemView({ theme: this.theme, viewModel: item as MetroVideoItemViewModel })
-                  .padding({ start: LengthMetrics.vp(10), end: LengthMetrics.vp(10) })
-              } else if ('swiper' === item.getItemType() && item instanceof MetroSwiperItemViewModel) {
-                MetroSwiperItemView({ theme: this.theme, viewModel: item as MetroSwiperItemViewModel })
-              }
-            }
-            .width('100%')
-            .height('auto')
-          })
+        if (item.tabInfo.id === TabType.Recommend) {
+          Recommend()
+        } else if (item.tabInfo.id === TabType.Follow) {
+          Follow()
+        } else if (item.tabInfo.id === TabType.DailyIssue) {
+          DailyIssue()
         }
-        .columnsTemplate(new BreakpointType('1fr', '1fr 1fr', '1fr 1fr 1fr').getValue2(this.curBreakpoint))
-        .width('100%')
-        .height('100%')
-        .rowsGap(12)
-        .columnsGap(8)
       })
     }
     .width('100%')

@@ -16,8 +16,11 @@ export function createRouterTabModel(tabName: Resource,
   iconSelected: Resource | undefined = undefined,
   moduleName: string,
   page: string,
-  isSelected: boolean = false): TabModel<RouterTabInfo> {
+  isSelected: boolean = false,
+  id: string = ''
+): TabModel<RouterTabInfo> {
   let tabInfo: RouterTabInfo = {
+    id: id,
     name: tabName,
     icon: icon,
     iconSelected: iconSelected,
@@ -29,10 +32,12 @@ export function createRouterTabModel(tabName: Resource,
 
 
 export function createTabModel(tabName: Resource,
+  id: string = '',
   icon: Resource | undefined = undefined,
   iconSelected: Resource | undefined = undefined,
   isSelected: boolean = false): TabModel<TabInfo> {
   let tabInfo: TabInfo = {
+    id: id,
     name: tabName,
     icon: icon,
     iconSelected: iconSelected,
