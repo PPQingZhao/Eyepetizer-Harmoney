@@ -17,7 +17,7 @@ export struct Follow {
 
   build() {
     LifecycleComponent({
-      contentParam: () => {
+      contentView: () => {
         this.ContentBuilder()
       },
       lifecycle: this.viewModel

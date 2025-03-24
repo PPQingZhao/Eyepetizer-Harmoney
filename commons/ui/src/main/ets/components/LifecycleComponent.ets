@@ -14,7 +14,7 @@ export interface ComponentLifecycle {
 
 @ComponentV2
 export struct LifecycleComponent {
-  @BuilderParam contentParam: () => void
+  @BuilderParam contentView: () => void
   @Param lifecycle?: ComponentLifecycle = undefined
 
   aboutToAppear(): void {
@@ -34,7 +34,7 @@ export struct LifecycleComponent {
   }
 
   build() {
-    this.contentParam()
+    this.contentView()
   }
 }
 

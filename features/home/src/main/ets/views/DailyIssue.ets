@@ -16,7 +16,7 @@ export struct DailyIssue {
 
   build() {
     LifecycleComponent({
-      contentParam: () => {
+      contentView: () => {
         this.ContentBuilder()
       },
       lifecycle: this.viewModel

@@ -16,7 +16,7 @@ export struct Recommend {
 
   build() {
     LifecycleComponent({
-      contentParam: () => {
+      contentView: () => {
         this.ContentBuilder()
       },
       lifecycle: this.viewModel

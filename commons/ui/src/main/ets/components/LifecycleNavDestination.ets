@@ -19,12 +19,12 @@ export interface NavDestinationLifecycle {
 
 @ComponentV2
 export struct LifecycleNavDestination {
-  @BuilderParam contentParam: () => void
+  @BuilderParam contentView: () => void
   @Param lifecycle?: NavDestinationLifecycle = undefined
 
   build() {
     NavDestination() {
-      this.contentParam()
+      this.contentView()
     }
     .hideTitleBar(true)
     .onWillAppear(() => {

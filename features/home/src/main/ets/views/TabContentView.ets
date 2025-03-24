@@ -15,19 +15,18 @@ import { DailyIssue } from './DailyIssue'
 @Preview
 @ComponentV2
 export struct TabContentView {
-  @Param @Require tabContentViewModel: TabContentViewModel
+  tabContentViewModel: TabContentViewModel = new TabContentViewModel()
   @Local curBreakpoint: BreakpointModel = getBreakpointModelByAppStorage()
   theme: CustomTheme = new DefaultAppTheme()
   windowArea: WindowArea = getWindowAreaByAppStorage()
   swiperController: SwiperController = new SwiperController()
 
-  aboutToAppear(): void {
-    let initPage = 0
-    this.selectedTab(initPage)
-  }
-
   onWillApplyTheme(theme: Theme): void {
     this.theme = theme
+  }
+
+  aboutToAppear(): void {
+    this.selectedTab(this.tabContentViewModel.getCurIndex())
   }
 
   build() {

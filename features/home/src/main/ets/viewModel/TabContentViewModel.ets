@@ -1,7 +1,6 @@
 import { TabInfo, TabModel } from 'ui';
 import { createTabModel } from 'ui/src/main/ets/tab/TabModel';
 import { SimpleDataSource } from 'ui/src/main/ets/utils/IDataSource';
-import { BaseNavPageViewModel } from 'ui/src/main/ets/utils/BaseNavPageViewModel';
 
 export enum TabType {
   Recommend = 'recommend',
@@ -10,27 +9,27 @@ export enum TabType {
 }
 
 @ObservedV2
-export class TabContentViewModel extends BaseNavPageViewModel {
+export class TabContentViewModel {
   tabModels: TabModel<TabInfo>[] = [
     createTabModel($r('[ui].string.recommend'), TabType.Recommend),
     createTabModel($r('[ui].string.follow'), TabType.Follow),
     createTabModel($r('[ui].string.daily'), TabType.DailyIssue),
   ]
 
-  onFirstAppear(): void {
-    console.info('onFirstAppear==============================>')
-  }
-
   tabDataSource: SimpleDataSource<TabModel<TabInfo>> = new SimpleDataSource<TabModel<TabInfo>>(this.tabModels)
-  private curTabModel: TabModel<TabInfo> = this.tabModels[0]
+  private curIndex = 0
+
+  getCurIndex() {
+    return this.curIndex
+  }
 
   selectedTab(index: number) {
     const targetTabModel = this.tabModels[index]
-    let tempTabModel = this.curTabModel
-    this.curTabModel = targetTabModel
+    let oldTabModel = this.tabModels[this.curIndex]
 
-    tempTabModel.isSelected = false
-    this.curTabModel.isSelected = true
+    oldTabModel.isSelected = false
+    targetTabModel.isSelected = true
+    this.curIndex = index
   }
 }
 
