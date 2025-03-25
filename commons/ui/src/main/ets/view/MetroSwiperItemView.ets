@@ -1,11 +1,12 @@
-import { SimpleDataSource } from 'ui/src/main/ets/utils/IDataSource'
+import { SimpleDataSource } from 'ui/src/main/ets/utils/DataSource'
 
 @ObservedV2
 export class MetroSwiperItemViewModel {
   dataSource: SimpleDataSource<string>
 
   constructor(data: string[]) {
-    this.dataSource = new SimpleDataSource<string>(data)
+    this.dataSource = new SimpleDataSource<string>()
+    this.dataSource.pushDataList(data)
   }
 }
 
@@ -36,6 +37,7 @@ export struct MetroSwiperItemView {
       .prevMargin(18)
       .nextMargin(18)
       .itemSpace(2)
+
 
       Text($r('app.string.more_detail'))
         .padding({ top: 10, left: 15, bottom: 10 })

@@ -6,8 +6,6 @@ import { getWindowAreaByAppStorage } from 'base/src/main/ets/utils/Window'
 import { WindowArea } from 'base'
 import { TabInfo, TabModel } from 'ui'
 import { BreakpointType } from 'base/src/main/ets/constans/BreakpointType'
-import { recommend } from 'eyesource/src/main/ets/api/EyepetizerService'
-import { BusinessError } from '@kit.BasicServicesKit'
 import { Recommend } from './RecommendView'
 import { Follow } from './FollowView'
 import { DailyIssue } from './DailyIssue'
@@ -43,7 +41,7 @@ export struct TabContentView {
     Swiper(this.swiperController) {
       LazyForEach(this.tabContentViewModel.tabDataSource, (item: TabModel<TabInfo>) => {
         if (item.tabInfo.id === TabType.Recommend) {
-          Recommend()
+          Recommend({ theme: this.theme })
         } else if (item.tabInfo.id === TabType.Follow) {
           Follow()
         } else if (item.tabInfo.id === TabType.DailyIssue) {
@@ -54,10 +52,10 @@ export struct TabContentView {
     .width('100%')
     .height('100%')
     .loop(false)
+    .backgroundColor(Color.Transparent)
     .onAnimationStart((index: number, targetIndex: number, extraInfo: SwiperAnimationEvent) => {
       this.tabContentViewModel.selectedTab(targetIndex)
     })
-    .backgroundColor(Color.Transparent)
   }
 
   private selectedTab(index: number) {
@@ -77,12 +75,6 @@ export struct TabContentView {
       .fontSize(new BreakpointType(14, 16, 16).getValue2(this.curBreakpoint))
       .textAlign(TextAlign.Center)
       .onClick(() => {
-        recommend().then(pageData => {
-          console.info(JSON.stringify(pageData))
-        }).catch((err: BusinessError) => {
-          console.info(err.message)
-        })
-
         this.selectedTab(index)
       })
   }
@@ -109,7 +101,7 @@ export struct TabContentView {
 
       // title bar
       Row({ space: 10 }) {
-        ForEach(this.tabContentViewModel.tabModels, (item: TabModel<TabInfo>, index: number) => {
+        LazyForEach(this.tabContentViewModel.tabDataSource, (item: TabModel<TabInfo>, index: number) => {
           this.tabBuilder(item, index)
         })
       }
