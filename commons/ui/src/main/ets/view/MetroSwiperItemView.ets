@@ -1,3 +1,4 @@
+import { GallerySwiper } from 'ui/src/main/ets/components/Gallery'
 import { SimpleDataSource } from 'ui/src/main/ets/utils/DataSource'
 
 @ObservedV2
@@ -16,28 +17,25 @@ export struct MetroSwiperItemView {
   @Param @Require viewModel: MetroSwiperItemViewModel = new MetroSwiperItemViewModel(['', '', '', '', ''])
   @Param theme?: CustomTheme = undefined
 
+  @Builder
+  galleryItem(index: number) {
+    Text(index.toString())
+      .textAlign(TextAlign.Center)
+      .backgroundColor(index % 2 == 0 ? Color.Red : Color.Blue)
+      .width('100%')
+      .height('auto')
+      .aspectRatio(16 / 9)
+  }
+
   build() {
     Column() {
-      Swiper() {
-        LazyForEach(this.viewModel.dataSource, (item: string, index: number) => {
-          Text(item + '  ' + index)
-            .textAlign(TextAlign.Center)
-            .backgroundColor(index % 2 == 0 ? Color.Red : Color.Blue)
-            .aspectRatio(16 / 9)
-            .height('auto')
-        })
-      }
-      .width('100%')
-      .displayCount(1)
-      .height('auto')
-      .autoPlay(false)
-      .loop(true)
-      .cachedCount(2)
-      .indicator(DotIndicator.dot().right(10).selectedColor(this.theme?.colors?.fontOnPrimary))
-      .prevMargin(18)
-      .nextMargin(18)
-      .itemSpace(2)
-
+      GallerySwiper({
+        count: this.viewModel.dataSource.totalCount(),
+        swiperItemBuilder: (index) => {
+          this.galleryItem(index)
+        }
+      }).width('100%')
+        .height('auto')
 
       Text($r('app.string.more_detail'))
         .padding({ top: 10, left: 15, bottom: 10 })
