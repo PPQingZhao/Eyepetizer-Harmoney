@@ -32,6 +32,11 @@ export class SimpleDataSource<Data> implements IDataSource {
     }
   }
 
+  deleteAllData() {
+    this.dataList.splice(0, this.totalCount())
+    notifyDataReloaded(this.listeners)
+  }
+
   getData(index: number): Data {
     return this.dataList[index]
   }
@@ -83,5 +88,11 @@ function notifyDataMove(listeners: DataChangeListener[], from: number, to: numbe
 function notifyDatasetChange(listeners: DataChangeListener[], dataOperations: DataOperation[]) {
   listeners.forEach((l) => {
     l.onDatasetChange(dataOperations)
+  })
+}
+
+function notifyDataReloaded(listeners: DataChangeListener[]) {
+  listeners.forEach((l) => {
+    l.onDataReloaded()
   })
 }

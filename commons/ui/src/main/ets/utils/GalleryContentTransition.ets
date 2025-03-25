@@ -3,19 +3,15 @@ import { AttributeUpdater } from '@kit.ArkUI'
 export class GalleryContentAnimatedTransition<Attribute extends CommonMethod<Attribute>> implements SwiperContentAnimatedTransition {
   timeout: number
   private galleryAttributeUpdate: GalleryAttributeUpdate<Attribute>[] = []
-  private minScaleOffset: number = 1
-  private minScale: number = 0.8
-  private readonly maxScale: number = 1.0
-  private xSlope: number = 1
-  private ySlope: number = 1
 
-  constructor(count: number = 1, minScale: number = 0.8, minScaleOffset: number = 1, timeout: number = 3000) {
-    this.minScale = minScale
-    this.minScaleOffset = minScaleOffset
+  constructor(count: number = 1, positionScale: number = 0.8, positionScaleOffset: number = 1, timeout: number = 3000) {
     this.timeout = timeout
 
+    let initPos = 0
     for (let index = 0; index < count; index++) {
-      this.galleryAttributeUpdate[index] = new GalleryAttributeUpdate(index)
+      initPos = index > count / 2 ? index - count : index
+      this.galleryAttributeUpdate[index] =
+        new GalleryAttributeUpdate(index, initPos, positionScale, positionScaleOffset)
 
     }
   }
@@ -42,7 +38,6 @@ export class GalleryContentAnimatedTransition<Attribute extends CommonMethod<Att
     return translateValue
   }
 
-
   transition: Callback<SwiperContentTransitionProxy, void> = (proxy: SwiperContentTransitionProxy) => {
     this.galleryAttributeUpdate[proxy.index].gallery(proxy.position)
   }
@@ -50,20 +45,22 @@ export class GalleryContentAnimatedTransition<Attribute extends CommonMethod<Att
 
 
 class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends AttributeUpdater<Attribute> {
-  private minScaleOffset: number = 1
-  private minScale: number = 0.8
+  private readonly positionScaleOffset: number = 1
+  private readonly positionScale: number = 0.8
   private readonly maxScale: number = 1.0
-  private xSlope: number = 1
-  private ySlope: number = 1
   private index: number = -1
+  private initPosition: number = 0
 
-  constructor(index: number) {
+  constructor(index: number, initPosition: number, positionScale: number = 0.8, positionScaleOffset: number = 1) {
     super()
     this.index = index
+    this.positionScale = positionScale
+    this.positionScaleOffset = positionScaleOffset
+    this.initPosition = initPosition
   }
 
   initializeModifier(instance: Attribute): void {
-    this.innerGallery(instance, this.index)
+    this.innerGallery(instance, this.initPosition)
   }
 
   gallery(position: number) {
@@ -84,10 +81,16 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
    * @returns
    */
   private calcScaleValue(position: number): number {
-    let linearSlope = -1 * Math.sign(position) * Math.abs(this.maxScale - this.minScale) / this.minScaleOffset
+    let linearSlope = Math.sin(position) * (this.positionScale - this.maxScale) / this.positionScaleOffset
     // console.info(`linearSlope: ${linearSlope} pos: ${position}`)
     let scaleValue = linearSlope * position + this.maxScale
-    scaleValue = scaleValue > this.maxScale ? this.maxScale : (scaleValue < this.minScale ? this.minScale : scaleValue)
+    let maxScaleValue = this.maxScale
+    let minScaleValue = this.positionScale
+    if (this.maxScale < this.positionScale) {
+      maxScaleValue = this.positionScale
+      minScaleValue = this.maxScale
+    }
+    scaleValue = scaleValue >= maxScaleValue ? maxScaleValue : (scaleValue < minScaleValue ? minScaleValue : scaleValue)
     return scaleValue
   }
 }
