@@ -38,7 +38,7 @@ export struct MetroSwiperItemView {
       }).width('100%')
         .height('auto')
 
-      Text($r('app.string.more_detail'))
+      Text($r("app.string.more_detail"))
         .padding({ top: 10, left: 15, bottom: 10 })
         .width('100%')
         .height('auto')

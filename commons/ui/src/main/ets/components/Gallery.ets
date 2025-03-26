@@ -32,13 +32,19 @@ export struct GallerySwiper {
         .alignContent(Alignment.Center)
         .borderColor(index % 2 === 0 ? Color.Yellow : Color.Green)
         .attributeModifier(this.galleryTransition.getGalleryItemAttribute(index))
-        .zIndex(this.curIndex == index ? 1 : 0)
       })
     }
     .displayCount(1)
     .nextMargin(40)
     .prevMargin(40)
+    .indicator(false)
     .cachedCount(this.positionScaleOffset)
+    .onGestureSwipe((index: number, extraInfo: SwiperAnimationEvent) => {
+      console.info(`onGestureSwipe:  ${index}      ${extraInfo.currentOffset}   ${extraInfo.targetOffset}`)
+    })
+    .onContentDidScroll((selectedIndex: number, index: number, position: number, mainAxisLength: number) => {
+      console.info(`onContentDidScroll:  ${selectedIndex}      ${index} `)
+    })
     .onChange((index: number) => {
       this.curIndex = index
       console.info(`onChange:  ${index}`)
