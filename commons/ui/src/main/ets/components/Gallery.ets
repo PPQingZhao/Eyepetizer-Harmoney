@@ -1,24 +1,37 @@
-import { SimpleDataSource } from 'ui/src/main/ets/utils/DataSource'
 import { GalleryContentAnimatedTransition } from 'ui/src/main/ets/utils/GalleryContentTransition'
+class DataSource implements IDataSource{
+  totalCount(): number {
+    throw new Error('Method not implemented.')
+  }
 
+  getData(index: number): number {
+    throw new Error('Method not implemented.')
+  }
+
+  registerDataChangeListener(listener: DataChangeListener): void {
+    throw new Error('Method not implemented.')
+  }
+
+  unregisterDataChangeListener(listener: DataChangeListener): void {
+    throw new Error('Method not implemented.')
+  }
+}
 @ComponentV2
 export struct GallerySwiper {
-  @Once @Param @Require count: number = 0
+  @Once @Param @Require galleryDataSource: IDataSource = new DataSource()
   @BuilderParam swiperItemBuilder: (index: number) => void
   @Once @Param positionScaleOffset: number = 1
   @Once @Param positionScale: number = 0.8
   private controller: SwiperController = new SwiperController()
   private galleryTransition =
-    new GalleryContentAnimatedTransition<StackAttribute>(this.count, this.positionScale, this.positionScaleOffset)
-  private galleryDataSource = new SimpleDataSource<number>()
+    new GalleryContentAnimatedTransition<StackAttribute>(this.galleryDataSource,this.positionScale, this.positionScaleOffset)
   @Local private curIndex: number = 0
+  private firstInit: boolean = true
 
   aboutToAppear(): void {
-    if (this.galleryDataSource.totalCount() != this.count) {
-      this.galleryDataSource.deleteAllData()
-      for (let index = 0; index < this.count; index++) {
-        this.galleryDataSource.pushData(index)
-      }
+    if (this.firstInit) {
+      this.firstInit = false
+      this.galleryDataSource.registerDataChangeListener(this.galleryTransition)
     }
   }
 

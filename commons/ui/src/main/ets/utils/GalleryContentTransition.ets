@@ -1,45 +1,98 @@
 import { AttributeUpdater } from '@kit.ArkUI'
+import { ArrayList } from '@kit.ArkTS'
 
-export class GalleryContentAnimatedTransition<Attribute extends CommonMethod<Attribute>> implements SwiperContentAnimatedTransition {
+export class GalleryContentAnimatedTransition<Attribute extends CommonMethod<Attribute>>
+implements SwiperContentAnimatedTransition, DataChangeListener {
   timeout: number
-  private galleryAttributeUpdate: GalleryAttributeUpdate<Attribute>[] = []
+  private galleryAttributeUpdates: ArrayList<GalleryAttributeUpdate<Attribute>> = new ArrayList()
+  private galleryDataSource: IDataSource
+  private readonly positionScaleOffset: number = 1
+  private readonly positionScale: number = 0.8
 
-  constructor(count: number = 1, positionScale: number = 0.8, positionScaleOffset: number = 1, timeout: number = 3000) {
+  constructor(galleryDataSource: IDataSource, positionScale: number = 0.8, positionScaleOffset: number = 1,
+    timeout: number = 3000) {
+    this.galleryDataSource = galleryDataSource
     this.timeout = timeout
+    this.positionScale = positionScale
+    this.positionScaleOffset = positionScaleOffset
 
+    this.onDataReloaded()
+  }
+
+  onDataReloaded(): void {
     let initPos = 0
+    let count = this.galleryDataSource.totalCount()
+    this.galleryAttributeUpdates.clear()
     for (let index = 0; index < count; index++) {
       initPos = index > count / 2 ? index - count : index
-      this.galleryAttributeUpdate[index] =
-        new GalleryAttributeUpdate(index, initPos, positionScale, positionScaleOffset)
-
+      this.galleryAttributeUpdates.add(
+        new GalleryAttributeUpdate(index, initPos, this.positionScale, this.positionScaleOffset))
     }
+  }
+
+  onDataAdded(index: number): void {
+    this.onDataAdd(index)
+  }
+
+  onDataAdd(index: number): void {
+    let count = this.galleryDataSource.totalCount()
+    let initPos = index > count / 2 ? index - count : index
+    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(index, initPos, this.positionScale,
+      this.positionScaleOffset), index)
+  }
+
+  onDataMoved(from: number, to: number): void {
+    this.onDataMove(from, to)
+  }
+
+  onDataMove(from: number, to: number): void {
+    let fromData = this.galleryAttributeUpdates[from]
+    let toData = this.galleryAttributeUpdates[to]
+    this.galleryAttributeUpdates[from] = toData
+    this.galleryAttributeUpdates[to] = fromData
+  }
+
+  onDataDeleted(index: number): void {
+    this.onDataDelete(index)
+  }
+
+  onDataDelete(index: number): void {
+    this.galleryAttributeUpdates.removeByIndex(index)
+    for (let i = index; i < this.galleryAttributeUpdates.length; i++) {
+      this.galleryAttributeUpdates[i].gallery(i)
+    }
+  }
+
+  onDataChanged(index: number): void {
+  }
+
+  onDataChange(index: number): void {
+  }
+
+  onDatasetChange(dataOperations: DataOperation[]): void {
+    dataOperations.forEach((operate) => {
+      switch (operate.type) {
+        case DataOperationType.ADD:
+          this.onDataAdd(operate.index)
+          break
+        case DataOperationType.DELETE:
+          this.onDataDeleted(operate.index)
+          break
+        case DataOperationType.MOVE:
+          let moveOperate = operate as DataMoveOperation
+          this.onDataMove(moveOperate.index.from, moveOperate.index.to)
+          break
+      }
+    })
   }
 
   getGalleryItemAttribute(index: number): AttributeModifier<Attribute> {
-    return this.galleryAttributeUpdate[index]
+    return this.galleryAttributeUpdates[index]
   }
 
-
-  private calcTranslateValue(position: number, mainAxisLength: number): number {
-    let anchorPosition = Math.abs(Math.abs(position)/* - this.anchorPositionValue*/)
-    let translateCount = Math.abs(position - anchorPosition)
-    if (translateCount < 1) {
-      return 0
-    }
-    let translateValue = 0
-    let tempPosition = anchorPosition
-    for (let index = 0; index <= translateCount; index++) {
-
-      // translateValue += Math.sin(position - anchorPosition) *
-      //   (mainAxisLength * this.calcScaleValue(tempPosition) - mainAxisLength) * 0.5
-      // tempPosition += 1
-    }
-    return translateValue
-  }
 
   transition: Callback<SwiperContentTransitionProxy, void> = (proxy: SwiperContentTransitionProxy) => {
-    this.galleryAttributeUpdate[proxy.index].gallery(proxy.position)
+    this.galleryAttributeUpdates[proxy.index].gallery(proxy.position)
   }
 }
 
@@ -92,5 +145,22 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
     }
     scaleValue = scaleValue >= maxScaleValue ? maxScaleValue : (scaleValue < minScaleValue ? minScaleValue : scaleValue)
     return scaleValue
+  }
+
+  private calcTranslateValue(position: number, mainAxisLength: number): number {
+    let anchorPosition = Math.abs(Math.abs(position)/* - this.anchorPositionValue*/)
+    let translateCount = Math.abs(position - anchorPosition)
+    if (translateCount < 1) {
+      return 0
+    }
+    let translateValue = 0
+    let tempPosition = anchorPosition
+    for (let index = 0; index <= translateCount; index++) {
+
+      // translateValue += Math.sin(position - anchorPosition) *
+      //   (mainAxisLength * this.calcScaleValue(tempPosition) - mainAxisLength) * 0.5
+      // tempPosition += 1
+    }
+    return translateValue
   }
 }

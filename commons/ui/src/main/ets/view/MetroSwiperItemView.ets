@@ -19,18 +19,22 @@ export struct MetroSwiperItemView {
 
   @Builder
   galleryItem(index: number) {
-    Text(index.toString())
+    Text(index.toString() + '      ' + this.viewModel.dataSource.getData(index))
       .textAlign(TextAlign.Center)
       .backgroundColor(index % 2 == 0 ? Color.Red : Color.Blue)
       .width('100%')
       .height('auto')
       .aspectRatio(16 / 9)
+      .onClick(() => {
+        // this.viewModel.dataSource.delete(index)
+        this.viewModel.dataSource.push('sss')
+      })
   }
 
   build() {
     Column() {
       GallerySwiper({
-        count: this.viewModel.dataSource.totalCount(),
+        galleryDataSource: this.viewModel.dataSource,
         positionScale: 0.8,
         swiperItemBuilder: (index) => {
           this.galleryItem(index)
