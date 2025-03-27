@@ -12,6 +12,7 @@ implements SwiperContentAnimatedTransition, DataChangeListener {
   constructor(galleryDataSource: IDataSource, positionScale: number = 0.8, positionScaleOffset: number = 1,
     timeout: number = 3000) {
     this.galleryDataSource = galleryDataSource
+    this.galleryDataSource.registerDataChangeListener(this)
     this.timeout = timeout
     this.positionScale = positionScale
     this.positionScaleOffset = positionScaleOffset
@@ -26,7 +27,7 @@ implements SwiperContentAnimatedTransition, DataChangeListener {
     for (let index = 0; index < count; index++) {
       initPos = index > count / 2 ? index - count : index
       this.galleryAttributeUpdates.add(
-        new GalleryAttributeUpdate(index, initPos, this.positionScale, this.positionScaleOffset))
+        new GalleryAttributeUpdate(initPos, this.positionScale, this.positionScaleOffset))
     }
   }
 
@@ -34,10 +35,14 @@ implements SwiperContentAnimatedTransition, DataChangeListener {
     this.onDataAdd(index)
   }
 
-  onDataAdd(index: number): void {
+  private calPosition(index: number) {
     let count = this.galleryDataSource.totalCount()
     let initPos = index > count / 2 ? index - count : index
-    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(index, initPos, this.positionScale,
+    return initPos
+  }
+
+  onDataAdd(index: number): void {
+    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(this.calPosition(index), this.positionScale,
       this.positionScaleOffset), index)
   }
 
@@ -59,7 +64,7 @@ implements SwiperContentAnimatedTransition, DataChangeListener {
   onDataDelete(index: number): void {
     this.galleryAttributeUpdates.removeByIndex(index)
     for (let i = index; i < this.galleryAttributeUpdates.length; i++) {
-      this.galleryAttributeUpdates[i].gallery(i)
+      this.galleryAttributeUpdates[i].gallery(i, 0)
     }
   }
 
@@ -90,9 +95,13 @@ implements SwiperContentAnimatedTransition, DataChangeListener {
     return this.galleryAttributeUpdates[index]
   }
 
+  gallery(index: number, size: SizeOptions) {
+    this.galleryAttributeUpdates[index].gallery(this.calPosition(index), size.width as number)
+  }
 
   transition: Callback<SwiperContentTransitionProxy, void> = (proxy: SwiperContentTransitionProxy) => {
-    this.galleryAttributeUpdates[proxy.index].gallery(proxy.position)
+    console.info(`=======================> index: ${proxy.index}  position: ${proxy.position} selectionIndex: ${proxy.selectedIndex}`)
+    this.galleryAttributeUpdates[proxy.index].gallery(proxy.position, proxy.mainAxisLength)
   }
 }
 
@@ -101,31 +110,32 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
   private readonly positionScaleOffset: number = 1
   private readonly positionScale: number = 0.8
   private readonly maxScale: number = 1.0
-  private index: number = -1
   private initPosition: number = 0
 
-  constructor(index: number, initPosition: number, positionScale: number = 0.8, positionScaleOffset: number = 1) {
+  constructor(initPosition: number, positionScale: number = 0.8, positionScaleOffset: number = 1) {
     super()
-    this.index = index
     this.positionScale = positionScale
     this.positionScaleOffset = positionScaleOffset
     this.initPosition = initPosition
   }
 
   initializeModifier(instance: Attribute): void {
-    this.innerGallery(instance, this.initPosition)
+    this.innerGallery(instance, this.initPosition, 0)
   }
 
-  gallery(position: number) {
-    this.innerGallery(this.attribute!!, position)
+  gallery(position: number, mainAxisLength: number) {
+    this.innerGallery(this.attribute!!, position, mainAxisLength)
   }
 
-  private innerGallery(attribute: Attribute, position: number) {
+  private innerGallery(attribute: Attribute, position: number, mainAxisLength: number) {
+    attribute.zIndex(0 <= position && position <= 0.5 ? 1 : 0)
+    // 缩放
     let xScaleValue = this.calcScaleValue(position)
     let yScaleValue = this.calcScaleValue(position)
     attribute.scale({ x: xScaleValue, y: yScaleValue })
-    console.log('GalleryContentAnimatedTransition==> ',
-      `index: ${this.index}   ${position}  scale: {x:${xScaleValue},y:${yScaleValue}}`)
+    // 平移
+    let translateValue = this.calcTranslateValue(position, mainAxisLength, xScaleValue)
+    attribute.translate({ x: translateValue })
   }
 
   /**
@@ -134,7 +144,7 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
    * @returns
    */
   private calcScaleValue(position: number): number {
-    let linearSlope = Math.sin(position) * (this.positionScale - this.maxScale) / this.positionScaleOffset
+    let linearSlope = Math.sign(position) * (this.positionScale - this.maxScale) / this.positionScaleOffset
     // console.info(`linearSlope: ${linearSlope} pos: ${position}`)
     let scaleValue = linearSlope * position + this.maxScale
     let maxScaleValue = this.maxScale
@@ -147,20 +157,28 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
     return scaleValue
   }
 
-  private calcTranslateValue(position: number, mainAxisLength: number): number {
-    let anchorPosition = Math.abs(Math.abs(position)/* - this.anchorPositionValue*/)
-    let translateCount = Math.abs(position - anchorPosition)
-    if (translateCount < 1) {
-      return 0
+  /**
+   * 每一个item与左右两个item相连
+   * @param position
+   * @param mainAxisLength
+   * @param xScaleValue
+   * @returns
+   */
+  private calcTranslateValue(position: number, mainAxisLength: number, xScaleValue: number): number {
+    console.info(`===========> position: ${position} xScaleValue:${xScaleValue}}`)
+    const sign = -1 * Math.sign(position)
+    // 当前缩放后的item左边与未缩放状态左边对齐
+    let translateValue = sign * mainAxisLength * (1 - xScaleValue) / 2
+    let indexScaleValue = 0.0
+    const startIndex = Math.abs(position) - 1
+    // 计算position前面所有item(从position等于0到当前position前一个)的偏移量总和
+    for (let index = startIndex; index > 0; index--) {
+      indexScaleValue = this.calcScaleValue(index)
+      translateValue = translateValue + sign * mainAxisLength * (1 - indexScaleValue)
+      console.info(`index: ${index}  idnexScaleValue: ${indexScaleValue} translateValue: ${translateValue}`)
     }
-    let translateValue = 0
-    let tempPosition = anchorPosition
-    for (let index = 0; index <= translateCount; index++) {
+    console.info(`GalleryContentAnimatedTransition  position: ${position}  translateValue: ${translateValue}`)
 
-      // translateValue += Math.sin(position - anchorPosition) *
-      //   (mainAxisLength * this.calcScaleValue(tempPosition) - mainAxisLength) * 0.5
-      // tempPosition += 1
-    }
     return translateValue
   }
 }

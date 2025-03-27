@@ -3,7 +3,7 @@ import { SimpleDataSource } from 'ui/src/main/ets/utils/DataSource'
 
 @ObservedV2
 export class MetroSwiperItemViewModel {
-  dataSource: SimpleDataSource<string>
+  @Trace dataSource: SimpleDataSource<string>
 
   constructor(data: string[]) {
     this.dataSource = new SimpleDataSource<string>()
@@ -27,7 +27,7 @@ export struct MetroSwiperItemView {
       .aspectRatio(16 / 9)
       .onClick(() => {
         // this.viewModel.dataSource.delete(index)
-        this.viewModel.dataSource.push('sss')
+        // this.viewModel.dataSource.push('sss')
       })
   }
 
@@ -36,13 +36,14 @@ export struct MetroSwiperItemView {
       GallerySwiper({
         galleryDataSource: this.viewModel.dataSource,
         positionScale: 0.8,
+        positionScaleOffset: 2,
         swiperItemBuilder: (index) => {
           this.galleryItem(index)
         }
       }).width('100%')
         .height('auto')
 
-      Text($r("app.string.more_detail"))
+      Text($r("app.string.app_name"))
         .padding({ top: 10, left: 15, bottom: 10 })
         .width('100%')
         .height('auto')

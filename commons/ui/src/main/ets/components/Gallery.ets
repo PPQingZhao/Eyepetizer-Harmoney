@@ -1,67 +1,51 @@
 import { GalleryContentAnimatedTransition } from 'ui/src/main/ets/utils/GalleryContentTransition'
-class DataSource implements IDataSource{
-  totalCount(): number {
-    throw new Error('Method not implemented.')
-  }
 
-  getData(index: number): number {
-    throw new Error('Method not implemented.')
-  }
-
-  registerDataChangeListener(listener: DataChangeListener): void {
-    throw new Error('Method not implemented.')
-  }
-
-  unregisterDataChangeListener(listener: DataChangeListener): void {
-    throw new Error('Method not implemented.')
-  }
-}
 @ComponentV2
 export struct GallerySwiper {
-  @Once @Param @Require galleryDataSource: IDataSource = new DataSource()
-  @BuilderParam swiperItemBuilder: (index: number) => void
-  @Once @Param positionScaleOffset: number = 1
-  @Once @Param positionScale: number = 0.8
-  private controller: SwiperController = new SwiperController()
-  private galleryTransition =
-    new GalleryContentAnimatedTransition<StackAttribute>(this.galleryDataSource,this.positionScale, this.positionScaleOffset)
-  @Local private curIndex: number = 0
-  private firstInit: boolean = true
-
-  aboutToAppear(): void {
-    if (this.firstInit) {
-      this.firstInit = false
-      this.galleryDataSource.registerDataChangeListener(this.galleryTransition)
+  @Once @Param @Require galleryDataSource: IDataSource = {
+    totalCount: (): number => {
+      return 0
+    },
+    getData: (index: number): number => {
+      return index
+    },
+    registerDataChangeListener: (listener: DataChangeListener): void => {
+    },
+    unregisterDataChangeListener: (listener: DataChangeListener): void => {
     }
   }
+  @BuilderParam swiperItemBuilder: (index: number) => void
+  @Once @Param positionScaleOffset: number = 1
+  @Once @Param positionScale: number = 0.5
+  private controller: SwiperController = new SwiperController()
+  private curSelectionIndex = 0
+  private galleryTransition =
+    new GalleryContentAnimatedTransition<StackAttribute>(this.galleryDataSource, this.positionScale,
+      this.positionScaleOffset)
 
   build() {
+
     Swiper(this.controller) {
       LazyForEach(this.galleryDataSource, (item: object, index: number) => {
         Stack() {
           this.swiperItemBuilder(index)
         }
-        .border({ width: 1 })
         .alignContent(Alignment.Center)
-        .borderColor(index % 2 === 0 ? Color.Yellow : Color.Green)
         .attributeModifier(this.galleryTransition.getGalleryItemAttribute(index))
+        .onSizeChange((oldValue: SizeOptions, newValue: SizeOptions) => {
+          console.info(`=============================  onSizeChange`)
+          this.galleryTransition.gallery(index, newValue)
+        })
       })
     }
     .displayCount(1)
-    .nextMargin(40)
-    .prevMargin(40)
+    .nextMargin(60)
+    .prevMargin(60)
     .indicator(false)
-    .cachedCount(this.positionScaleOffset)
-    .onGestureSwipe((index: number, extraInfo: SwiperAnimationEvent) => {
-      console.info(`onGestureSwipe:  ${index}      ${extraInfo.currentOffset}   ${extraInfo.targetOffset}`)
-    })
-    .onContentDidScroll((selectedIndex: number, index: number, position: number, mainAxisLength: number) => {
-      console.info(`onContentDidScroll:  ${selectedIndex}      ${index} `)
-    })
-    .onChange((index: number) => {
-      this.curIndex = index
-      console.info(`onChange:  ${index}`)
-    })
+    .cachedCount(1)
     .customContentTransition(this.galleryTransition)
+    .onChange((index) => {
+      this.curSelectionIndex = index
+    })
   }
 }

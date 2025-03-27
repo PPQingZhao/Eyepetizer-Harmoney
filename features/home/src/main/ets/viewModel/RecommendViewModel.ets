@@ -9,7 +9,7 @@ export class RecommendViewModel extends BaseComponentViewModel {
 
   onFirstAppear(): void {
     const dataList: ItemType[] = []
-    for (let index = 0; index < 50; index++) {
+    for (let index = 0; index < 1; index++) {
       dataList[index] = new MetroSwiperItemType({ text: `index: ${index}` })
     }
     this.dataSources.pushDataList(dataList)

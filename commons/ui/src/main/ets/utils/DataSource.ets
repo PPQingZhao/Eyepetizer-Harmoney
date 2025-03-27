@@ -32,6 +32,11 @@ export class SimpleDataSource<Data> implements IDataSource {
     }
   }
 
+  update(index: number, data: Data) {
+    this.dataList[index] = data
+    notifyDataChange(this.listeners, index)
+  }
+
   deleteAllData() {
     this.dataList.splice(0, this.totalCount())
     notifyDataReloaded(this.listeners)
