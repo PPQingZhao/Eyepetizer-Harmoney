@@ -27,13 +27,10 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
   }
 
   onDataReloaded(): void {
-    let initPos = 0
-    let count = this.galleryDataSource.totalCount()
     this.galleryAttributeUpdates.clear()
-    for (let index = 0; index < count; index++) {
-      initPos = index > count / 2 ? index - count : index
+    for (let index = 0; index < this.galleryDataSource.totalCount(); index++) {
       this.galleryAttributeUpdates.add(
-        new GalleryAttributeUpdate(initPos, this.positionScale, this.positionScaleOffset, this.itemSpace))
+        new GalleryAttributeUpdate(this.positionScale, this.positionScaleOffset, this.itemSpace))
     }
   }
 
@@ -61,9 +58,8 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
   }
 
   onDataAdd(index: number): void {
-    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(this.calPositionByDisPlayCountWithIndex(index),
-      this.positionScale,
-      this.positionScaleOffset, this.itemSpace), index)
+    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(this.positionScale, this.positionScaleOffset,
+      this.itemSpace), index)
   }
 
   onDataMoved(from: number, to: number): void {
@@ -116,7 +112,7 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
     return this.galleryAttributeUpdates[index]
   }
 
-  onSizeChaneCallback(index: number, oldValue: SizeOptions, newValue: SizeOptions): void {
+  onSizeChange(index: number, oldValue: SizeOptions, newValue: SizeOptions): void {
     this.galleryAttributeUpdates[index].gallery(this.calProxyPositionByCount(index),
       this.calPositionByDisPlayCountWithIndex(index), newValue.width as number)
   }
@@ -132,16 +128,14 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
   private readonly positionScaleOffset: number = 1
   private readonly positionScale: number = 0.8
   private readonly maxScale: number = 1.0
-  private initPosition: number = 0
   private mainAxisLength: number = 0
   private isInit = false
   private itemSpace = 0
 
-  constructor(initPosition: number, positionScale: number, positionScaleOffset: number, itemSpace: number) {
+  constructor(positionScale: number, positionScaleOffset: number, itemSpace: number) {
     super()
     this.positionScale = positionScale
     this.positionScaleOffset = positionScaleOffset
-    this.initPosition = initPosition
     this.itemSpace = itemSpace
   }
 

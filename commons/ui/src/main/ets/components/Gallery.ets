@@ -36,7 +36,7 @@ export struct GallerySwiper {
         .alignContent(Alignment.Center)
         .attributeModifier(this.galleryTransition.getGalleryItemAttribute(index))
         .onSizeChange((oldValue: SizeOptions, newValue: SizeOptions) => {
-          this.galleryTransition.onSizeChaneCallback(index, oldValue, newValue)
+          this.galleryTransition.onSizeChange(index, oldValue, newValue)
         })
       })
     }
@@ -51,5 +51,5 @@ export struct GallerySwiper {
 }
 
 export interface OnGalleryItemSizeChangeCallback {
-  onSizeChaneCallback(index: number, oldValue: SizeOptions, newValue: SizeOptions): void
+  onSizeChange(index: number, oldValue: SizeOptions, newValue: SizeOptions): void
 }
