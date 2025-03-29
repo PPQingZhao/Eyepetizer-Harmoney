@@ -5,7 +5,7 @@ import { Metro_data } from 'eyesource/src/main/ets/bean/PageDataBean'
 export class MetroSwiperItemType extends MetroSwiperItemViewModel implements ItemType {
   constructor(metro: Metro_data) {
     const data: string[] = []
-    for (let index = 0; index < 15; index++) {
+    for (let index = 0; index < 9; index++) {
       data[index] = index.toString()
     }
     super(data)

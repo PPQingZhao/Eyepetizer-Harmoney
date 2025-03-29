@@ -19,6 +19,7 @@ export struct GallerySwiper {
   @Once @Param positionScaleOffset: number = 1
   @Once @Param positionScale: number = 0.5
   @Once @Param itemSpace: number = 0
+  @Once @Param indicatorController: IndicatorComponentController = new IndicatorComponentController()
   private controller: SwiperController = new SwiperController()
   private galleryTransition =
     new GalleryContentAnimatedTransition<StackAttribute>(this.galleryDataSource, this.disPlayCount, this.itemSpace,
@@ -44,6 +45,7 @@ export struct GallerySwiper {
     .prevMargin(60)
     .indicator(false)
     .cachedCount(1, true)
+    .indicator(this.indicatorController)
     .customContentTransition(this.galleryTransition)
   }
 }

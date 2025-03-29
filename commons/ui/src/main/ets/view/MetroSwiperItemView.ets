@@ -16,6 +16,7 @@ export class MetroSwiperItemViewModel {
 export struct MetroSwiperItemView {
   @Param @Require viewModel: MetroSwiperItemViewModel = new MetroSwiperItemViewModel(['', '', '', '', ''])
   @Param theme?: CustomTheme = undefined
+  private indicatorController: IndicatorComponentController = new IndicatorComponentController()
 
   @Builder
   galleryItem(index: number) {
@@ -39,18 +40,35 @@ export struct MetroSwiperItemView {
         positionScale: 0.85,
         positionScaleOffset: 1,
         itemSpace: 8,
+        indicatorController: this.indicatorController,
         swiperItemBuilder: (index) => {
           this.galleryItem(index)
         }
       }).width('100%')
         .height('auto')
 
-      Text($r("app.string.app_name"))
-        .padding({ top: 10, left: 15, bottom: 10 })
-        .width('100%')
-        .height('auto')
-        .fontSize(12)
-        .fontColor(this.theme?.colors?.fontPrimary)
+      Row() {
+        Text($r('app.string.more_detail'))
+          .padding({ top: 10, left: 15, bottom: 10 })
+          .width('auto')
+          .height('auto')
+          .fontSize(12)
+          .fontColor(this.theme?.colors?.fontPrimary)
+          .layoutWeight(1)
+
+        IndicatorComponent(this.indicatorController)
+          .style(
+            DotIndicator.dot()
+              .selectedColor(this.theme?.colors?.fontOnPrimary)
+              .color(this.theme?.colors?.fontPrimary)
+          )
+          .count(this.viewModel.dataSource.totalCount())
+          .loop(true)
+          .alignSelf(ItemAlign.End)
+          .vertical(false)
+          .count(this.viewModel.dataSource.totalCount())
+      }.alignItems(VerticalAlign.Center)
+      .width('100%')
 
       Divider()
         .height(1)
