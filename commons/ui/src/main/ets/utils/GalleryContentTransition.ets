@@ -122,7 +122,7 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
 
   transition: Callback<SwiperContentTransitionProxy, void> = (proxy: SwiperContentTransitionProxy) => {
     const position = this.calPositionByDisPlayCount(proxy.position)
-    console.info(`=======================> index: ${proxy.index}  position: ${proxy.position} --  ${position} selectionIndex: ${proxy.selectedIndex}`)
+    // console.info(`=======================> index: ${proxy.index}  position: ${proxy.position} --  ${position} selectionIndex: ${proxy.selectedIndex}`)
     this.galleryAttributeUpdates[proxy.index].gallery(proxy.position, position, proxy.mainAxisLength)
   }
 }
@@ -177,7 +177,8 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
    */
   private calcScaleValue(position: number): number {
     const galleryInfo = this.getGalleryInfo(position)
-    let linearSlope = Math.sign(position) * (galleryInfo.positionScale - this.maxScale) / galleryInfo.positionScaleOffset
+    let linearSlope =
+      Math.sign(position) * (galleryInfo.positionScale - this.maxScale) / galleryInfo.positionScaleOffset
     // console.info(`linearSlope: ${linearSlope} pos: ${position}`)
     let scaleValue = linearSlope * position + this.maxScale
     let maxScaleValue = this.maxScale
@@ -199,7 +200,7 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
    */
   private calcTranslateValue(proxyPosition: number, position: number, mainAxisLength: number,
     xScaleValue: number): number {
-    console.info(`===========>proxyPosition: ${proxyPosition} position: ${position} xScaleValue:${xScaleValue}`)
+    // console.info(`===========>proxyPosition: ${proxyPosition} position: ${position} xScaleValue:${xScaleValue}`)
     const sign = -1 * Math.sign(position)
     // 当前缩放后的item左边与未缩放状态左边对齐
     let translateValue = sign * mainAxisLength * (1 - xScaleValue) / 2 + proxyPosition * this.itemSpace
@@ -209,9 +210,9 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
     for (let index = startIndex; index > 0; index--) {
       indexScaleValue = this.calcScaleValue(index)
       translateValue = translateValue + sign * (mainAxisLength) * (1 - indexScaleValue)
-      console.info(`index: ${index}  idnexScaleValue: ${indexScaleValue} translateValue: ${translateValue}`)
+      // console.info(`index: ${index}  idnexScaleValue: ${indexScaleValue} translateValue: ${translateValue}`)
     }
-    console.info(`GalleryContentAnimatedTransition  position: ${position}  translateValue: ${translateValue}`)
+    // console.info(`GalleryContentAnimatedTransition  position: ${position}  translateValue: ${translateValue}`)
 
     return translateValue
   }
