@@ -1,4 +1,4 @@
-import { GalleryContentAnimatedTransition } from 'ui/src/main/ets/utils/GalleryContentTransition'
+import { GalleryContentAnimatedTransition, GalleryInfo } from 'ui/src/main/ets/utils/GalleryContentTransition'
 
 @ComponentV2
 export struct GallerySwiper {
@@ -16,15 +16,14 @@ export struct GallerySwiper {
   }
   @BuilderParam swiperItemBuilder: (index: number) => void
   @Once @Param disPlayCount: number = 1
-  @Once @Param positionScaleOffset: number = 1
-  @Once @Param positionScale: number = 0.5
   @Once @Param itemSpace: number = 0
   @Once @Param indicatorController: IndicatorComponentController = new IndicatorComponentController()
+  @Once @Param positiveGalleryInfo: GalleryInfo = { positionScale: 1.0, positionScaleOffset: 1 }
+  @Once @Param negativeGalleryInfo: GalleryInfo = { positionScale: 1.0, positionScaleOffset: 1 }
   private controller: SwiperController = new SwiperController()
   private galleryTransition =
     new GalleryContentAnimatedTransition<StackAttribute>(this.galleryDataSource, this.disPlayCount, this.itemSpace,
-      this.positionScale,
-      this.positionScaleOffset)
+      this.positiveGalleryInfo, this.negativeGalleryInfo)
 
   build() {
 

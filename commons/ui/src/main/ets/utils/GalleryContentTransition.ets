@@ -7,21 +7,24 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
   timeout: number
   private galleryAttributeUpdates: ArrayList<GalleryAttributeUpdate<Attribute>> = new ArrayList()
   private galleryDataSource: IDataSource
-  private readonly positionScaleOffset: number = 1
-  private readonly positionScale: number = 0.8
-  private readonly disPlayCount: number = 1
-  private readonly itemSpace: number = 0
+  private readonly disPlayCount: number
+  private readonly itemSpace: number
+  private readonly positiveGalleryInfo: GalleryInfo
+  private readonly negativeGalleryInfo: GalleryInfo
 
-  constructor(galleryDataSource: IDataSource, disPlayCount: number, itemSpace: number, positionScale: number = 0.8,
-    positionScaleOffset: number = 1,
+  constructor(galleryDataSource: IDataSource,
+    disPlayCount: number = 1,
+    itemSpace: number = 0,
+    positiveGalleryInfo: GalleryInfo = { positionScale: 1.0, positionScaleOffset: 1 },
+    negativeGalleryInfo: GalleryInfo = { positionScale: 1.0, positionScaleOffset: 1 },
     timeout: number = 3000) {
     this.galleryDataSource = galleryDataSource
     this.galleryDataSource.registerDataChangeListener(this)
     this.timeout = timeout
     this.disPlayCount = disPlayCount
     this.itemSpace = itemSpace
-    this.positionScale = positionScale
-    this.positionScaleOffset = positionScaleOffset
+    this.positiveGalleryInfo = positiveGalleryInfo
+    this.negativeGalleryInfo = negativeGalleryInfo
 
     this.onDataReloaded()
   }
@@ -30,7 +33,7 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
     this.galleryAttributeUpdates.clear()
     for (let index = 0; index < this.galleryDataSource.totalCount(); index++) {
       this.galleryAttributeUpdates.add(
-        new GalleryAttributeUpdate(this.positionScale, this.positionScaleOffset, this.itemSpace))
+        new GalleryAttributeUpdate(this.positiveGalleryInfo, this.negativeGalleryInfo, this.itemSpace))
     }
   }
 
@@ -58,7 +61,7 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
   }
 
   onDataAdd(index: number): void {
-    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(this.positionScale, this.positionScaleOffset,
+    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(this.positiveGalleryInfo, this.negativeGalleryInfo,
       this.itemSpace), index)
   }
 
@@ -125,17 +128,17 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
 }
 
 class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends AttributeUpdater<Attribute> {
-  private readonly positionScaleOffset: number = 1
-  private readonly positionScale: number = 0.8
   private readonly maxScale: number = 1.0
   private mainAxisLength: number = 0
   private isInit = false
-  private itemSpace = 0
+  private readonly itemSpace: number
+  private readonly positiveGalleryInfo: GalleryInfo
+  private readonly negativeGalleryInfo: GalleryInfo
 
-  constructor(positionScale: number, positionScaleOffset: number, itemSpace: number) {
+  constructor(positiveGalleryInfo: GalleryInfo, negativeGalleryInfo: GalleryInfo, itemSpace: number) {
     super()
-    this.positionScale = positionScale
-    this.positionScaleOffset = positionScaleOffset
+    this.positiveGalleryInfo = positiveGalleryInfo
+    this.negativeGalleryInfo = negativeGalleryInfo
     this.itemSpace = itemSpace
   }
 
@@ -163,19 +166,24 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
     this.attribute.translate({ x: translateValue })
   }
 
+  private getGalleryInfo(position: number) {
+    return position < 0 ? this.negativeGalleryInfo : this.positiveGalleryInfo
+  }
+
   /**
    * 计算position位置的缩放量
    * @param position
    * @returns
    */
   private calcScaleValue(position: number): number {
-    let linearSlope = Math.sign(position) * (this.positionScale - this.maxScale) / this.positionScaleOffset
+    const galleryInfo = this.getGalleryInfo(position)
+    let linearSlope = Math.sign(position) * (galleryInfo.positionScale - this.maxScale) / galleryInfo.positionScaleOffset
     // console.info(`linearSlope: ${linearSlope} pos: ${position}`)
     let scaleValue = linearSlope * position + this.maxScale
     let maxScaleValue = this.maxScale
-    let minScaleValue = this.positionScale
-    if (this.maxScale < this.positionScale) {
-      maxScaleValue = this.positionScale
+    let minScaleValue = galleryInfo.positionScale
+    if (this.maxScale < galleryInfo.positionScale) {
+      maxScaleValue = galleryInfo.positionScale
       minScaleValue = this.maxScale
     }
     scaleValue = scaleValue >= maxScaleValue ? maxScaleValue : (scaleValue < minScaleValue ? minScaleValue : scaleValue)
@@ -207,4 +215,9 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
 
     return translateValue
   }
+}
+
+export interface GalleryInfo {
+  positionScale: number
+  positionScaleOffset: number
 }
