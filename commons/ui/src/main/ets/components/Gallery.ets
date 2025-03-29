@@ -17,13 +17,29 @@ export struct GallerySwiper {
   @BuilderParam swiperItemBuilder: (index: number) => void
   @Once @Param disPlayCount: number = 1
   @Once @Param itemSpace: number = 0
+  @Once @Param nextMargin: number = 0
+  @Once @Param preMargin: number = 0
+  @Once @Param preGalleryMargin: number = 0
+  @Once @Param nextGalleryMargin: number = 0
   @Once @Param indicatorController: IndicatorComponentController = new IndicatorComponentController()
-  @Once @Param positiveGalleryInfo: GalleryInfo = { positionScale: 1.0, positionScaleOffset: 1 }
-  @Once @Param negativeGalleryInfo: GalleryInfo = { positionScale: 1.0, positionScaleOffset: 1 }
+  @Once @Param nextGalleryInfo: GalleryInfo = {
+    positionScale: 1.0,
+    positionScaleOffset: 1,
+  }
+  @Once @Param preGalleryInfo: GalleryInfo = {
+    positionScale: 1.0,
+    positionScaleOffset: 1,
+  }
   private controller: SwiperController = new SwiperController()
   private galleryTransition =
-    new GalleryContentAnimatedTransition<StackAttribute>(this.galleryDataSource, this.disPlayCount, this.itemSpace,
-      this.positiveGalleryInfo, this.negativeGalleryInfo)
+    new GalleryContentAnimatedTransition<StackAttribute>(
+      this.galleryDataSource,
+      this.disPlayCount,
+      this.itemSpace,
+      this.nextGalleryMargin,
+      this.preGalleryMargin,
+      this.nextGalleryInfo,
+      this.preGalleryInfo)
 
   build() {
 
@@ -40,8 +56,8 @@ export struct GallerySwiper {
       })
     }
     .displayCount(this.disPlayCount)
-    .nextMargin(60)
-    .prevMargin(60)
+    .nextMargin(this.nextMargin)
+    .prevMargin(this.preMargin)
     .indicator(false)
     .cachedCount(1, true)
     .indicator(this.indicatorController)
