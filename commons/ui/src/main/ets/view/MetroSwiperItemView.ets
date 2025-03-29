@@ -35,8 +35,10 @@ export struct MetroSwiperItemView {
     Column() {
       GallerySwiper({
         galleryDataSource: this.viewModel.dataSource,
-        positionScale: 0.8,
-        positionScaleOffset: 2,
+        disPlayCount: 3,
+        positionScale: 0.85,
+        positionScaleOffset: 1,
+        itemSpace: 8,
         swiperItemBuilder: (index) => {
           this.galleryItem(index)
         }

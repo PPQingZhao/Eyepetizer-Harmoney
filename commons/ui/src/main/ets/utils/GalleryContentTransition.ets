@@ -1,19 +1,25 @@
 import { AttributeUpdater } from '@kit.ArkUI'
 import { ArrayList } from '@kit.ArkTS'
+import { OnGalleryItemSizeChangeCallback } from '../components/Gallery'
 
 export class GalleryContentAnimatedTransition<Attribute extends CommonMethod<Attribute>>
-implements SwiperContentAnimatedTransition, DataChangeListener {
+implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSizeChangeCallback {
   timeout: number
   private galleryAttributeUpdates: ArrayList<GalleryAttributeUpdate<Attribute>> = new ArrayList()
   private galleryDataSource: IDataSource
   private readonly positionScaleOffset: number = 1
   private readonly positionScale: number = 0.8
+  private readonly disPlayCount: number = 1
+  private readonly itemSpace: number = 0
 
-  constructor(galleryDataSource: IDataSource, positionScale: number = 0.8, positionScaleOffset: number = 1,
+  constructor(galleryDataSource: IDataSource, disPlayCount: number, itemSpace: number, positionScale: number = 0.8,
+    positionScaleOffset: number = 1,
     timeout: number = 3000) {
     this.galleryDataSource = galleryDataSource
     this.galleryDataSource.registerDataChangeListener(this)
     this.timeout = timeout
+    this.disPlayCount = disPlayCount
+    this.itemSpace = itemSpace
     this.positionScale = positionScale
     this.positionScaleOffset = positionScaleOffset
 
@@ -27,7 +33,7 @@ implements SwiperContentAnimatedTransition, DataChangeListener {
     for (let index = 0; index < count; index++) {
       initPos = index > count / 2 ? index - count : index
       this.galleryAttributeUpdates.add(
-        new GalleryAttributeUpdate(initPos, this.positionScale, this.positionScaleOffset))
+        new GalleryAttributeUpdate(initPos, this.positionScale, this.positionScaleOffset, this.itemSpace))
     }
   }
 
@@ -35,15 +41,25 @@ implements SwiperContentAnimatedTransition, DataChangeListener {
     this.onDataAdd(index)
   }
 
-  private calPosition(index: number) {
+  private calPositionByCount(index: number): number {
     let count = this.galleryDataSource.totalCount()
     let initPos = index > count / 2 ? index - count : index
-    return initPos
+    return this.calPositionByDisPlayCount(initPos)
+  }
+
+  private calPositionByDisPlayCount(position: number) {
+    let pos = position
+    if (position > this.disPlayCount - 1) {
+      pos = position - (this.disPlayCount - 1)
+    } else if (position > 0) {
+      pos = 0
+    }
+    return pos
   }
 
   onDataAdd(index: number): void {
-    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(this.calPosition(index), this.positionScale,
-      this.positionScaleOffset), index)
+    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(this.calPositionByCount(index), this.positionScale,
+      this.positionScaleOffset, this.itemSpace), index)
   }
 
   onDataMoved(from: number, to: number): void {
@@ -64,7 +80,7 @@ implements SwiperContentAnimatedTransition, DataChangeListener {
   onDataDelete(index: number): void {
     this.galleryAttributeUpdates.removeByIndex(index)
     for (let i = index; i < this.galleryAttributeUpdates.length; i++) {
-      this.galleryAttributeUpdates[i].gallery(i, 0)
+      this.galleryAttributeUpdates[i].gallery(i)
     }
   }
 
@@ -95,13 +111,14 @@ implements SwiperContentAnimatedTransition, DataChangeListener {
     return this.galleryAttributeUpdates[index]
   }
 
-  gallery(index: number, size: SizeOptions) {
-    this.galleryAttributeUpdates[index].gallery(this.calPosition(index), size.width as number)
+  onSizeChaneCallback(index: number, oldValue: SizeOptions, newValue: SizeOptions): void {
+    this.galleryAttributeUpdates[index].gallery(this.calPositionByCount(index), newValue.width as number)
   }
 
   transition: Callback<SwiperContentTransitionProxy, void> = (proxy: SwiperContentTransitionProxy) => {
-    console.info(`=======================> index: ${proxy.index}  position: ${proxy.position} selectionIndex: ${proxy.selectedIndex}`)
-    this.galleryAttributeUpdates[proxy.index].gallery(proxy.position, proxy.mainAxisLength)
+    const position = this.calPositionByDisPlayCount(proxy.position)
+    console.info(`=======================> index: ${proxy.index}  position: ${proxy.position} --  ${position} selectionIndex: ${proxy.selectedIndex}`)
+    this.galleryAttributeUpdates[proxy.index].gallery(position, proxy.mainAxisLength)
   }
 }
 
@@ -111,23 +128,32 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
   private readonly positionScale: number = 0.8
   private readonly maxScale: number = 1.0
   private initPosition: number = 0
+  private mainAxisLength: number = 0
+  private isInit = false
+  private itemSpace = 0
 
-  constructor(initPosition: number, positionScale: number = 0.8, positionScaleOffset: number = 1) {
+  constructor(initPosition: number, positionScale: number, positionScaleOffset: number, itemSpace: number) {
     super()
     this.positionScale = positionScale
     this.positionScaleOffset = positionScaleOffset
     this.initPosition = initPosition
+    this.itemSpace = itemSpace
   }
 
   initializeModifier(instance: Attribute): void {
+    this.isInit = true
     this.innerGallery(instance, this.initPosition, 0)
   }
 
-  gallery(position: number, mainAxisLength: number) {
+  gallery(position: number, mainAxisLength: number = this.mainAxisLength) {
+    this.mainAxisLength = mainAxisLength
     this.innerGallery(this.attribute!!, position, mainAxisLength)
   }
 
   private innerGallery(attribute: Attribute, position: number, mainAxisLength: number) {
+    if (!this.isInit) {
+      return
+    }
     attribute.zIndex(0 <= position && position <= 0.5 ? 1 : 0)
     // 缩放
     let xScaleValue = this.calcScaleValue(position)
@@ -165,16 +191,16 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
    * @returns
    */
   private calcTranslateValue(position: number, mainAxisLength: number, xScaleValue: number): number {
-    console.info(`===========> position: ${position} xScaleValue:${xScaleValue}}`)
+    console.info(`===========> position: ${position} xScaleValue:${xScaleValue}`)
     const sign = -1 * Math.sign(position)
     // 当前缩放后的item左边与未缩放状态左边对齐
-    let translateValue = sign * mainAxisLength * (1 - xScaleValue) / 2
+    let translateValue = sign * mainAxisLength * (1 - xScaleValue) / 2 + position * this.itemSpace
     let indexScaleValue = 0.0
     const startIndex = Math.abs(position) - 1
     // 计算position前面所有item(从position等于0到当前position前一个)的偏移量总和
     for (let index = startIndex; index > 0; index--) {
       indexScaleValue = this.calcScaleValue(index)
-      translateValue = translateValue + sign * mainAxisLength * (1 - indexScaleValue)
+      translateValue = translateValue + sign * (mainAxisLength) * (1 - indexScaleValue)
       console.info(`index: ${index}  idnexScaleValue: ${indexScaleValue} translateValue: ${translateValue}`)
     }
     console.info(`GalleryContentAnimatedTransition  position: ${position}  translateValue: ${translateValue}`)

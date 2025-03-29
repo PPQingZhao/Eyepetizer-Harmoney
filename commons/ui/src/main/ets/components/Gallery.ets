@@ -15,12 +15,14 @@ export struct GallerySwiper {
     }
   }
   @BuilderParam swiperItemBuilder: (index: number) => void
+  @Once @Param disPlayCount: number = 1
   @Once @Param positionScaleOffset: number = 1
   @Once @Param positionScale: number = 0.5
+  @Once @Param itemSpace: number = 0
   private controller: SwiperController = new SwiperController()
-  private curSelectionIndex = 0
   private galleryTransition =
-    new GalleryContentAnimatedTransition<StackAttribute>(this.galleryDataSource, this.positionScale,
+    new GalleryContentAnimatedTransition<StackAttribute>(this.galleryDataSource, this.disPlayCount, this.itemSpace,
+      this.positionScale,
       this.positionScaleOffset)
 
   build() {
@@ -33,19 +35,19 @@ export struct GallerySwiper {
         .alignContent(Alignment.Center)
         .attributeModifier(this.galleryTransition.getGalleryItemAttribute(index))
         .onSizeChange((oldValue: SizeOptions, newValue: SizeOptions) => {
-          console.info(`=============================  onSizeChange`)
-          this.galleryTransition.gallery(index, newValue)
+          this.galleryTransition.onSizeChaneCallback(index, oldValue, newValue)
         })
       })
     }
-    .displayCount(1)
+    .displayCount(this.disPlayCount)
     .nextMargin(60)
     .prevMargin(60)
     .indicator(false)
-    .cachedCount(1)
+    .cachedCount(1, true)
     .customContentTransition(this.galleryTransition)
-    .onChange((index) => {
-      this.curSelectionIndex = index
-    })
   }
+}
+
+export interface OnGalleryItemSizeChangeCallback {
+  onSizeChaneCallback(index: number, oldValue: SizeOptions, newValue: SizeOptions): void
 }
