@@ -39,7 +39,7 @@ export struct MetroSwiperItemView {
         disPlayCount: 3,
         positionScale: 0.85,
         positionScaleOffset: 1,
-        itemSpace: 8,
+        itemSpace: 4,
         indicatorController: this.indicatorController,
         swiperItemBuilder: (index) => {
           this.galleryItem(index)

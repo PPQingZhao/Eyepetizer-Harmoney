@@ -41,10 +41,13 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
     this.onDataAdd(index)
   }
 
-  private calPositionByCount(index: number): number {
+  private calPositionByDisPlayCountWithIndex(index: number): number {
+    return this.calPositionByDisPlayCount(this.calProxyPositionByCount(index))
+  }
+
+  private calProxyPositionByCount(index: number): number {
     let count = this.galleryDataSource.totalCount()
-    let initPos = index > count / 2 ? index - count : index
-    return this.calPositionByDisPlayCount(initPos)
+    return index > count / 2 ? index - count : index
   }
 
   private calPositionByDisPlayCount(position: number) {
@@ -58,7 +61,8 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
   }
 
   onDataAdd(index: number): void {
-    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(this.calPositionByCount(index), this.positionScale,
+    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(this.calPositionByDisPlayCountWithIndex(index),
+      this.positionScale,
       this.positionScaleOffset, this.itemSpace), index)
   }
 
@@ -80,7 +84,8 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
   onDataDelete(index: number): void {
     this.galleryAttributeUpdates.removeByIndex(index)
     for (let i = index; i < this.galleryAttributeUpdates.length; i++) {
-      this.galleryAttributeUpdates[i].gallery(i)
+      this.galleryAttributeUpdates[i].gallery(this.calProxyPositionByCount(i),
+        this.calPositionByDisPlayCountWithIndex(i))
     }
   }
 
@@ -112,16 +117,16 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
   }
 
   onSizeChaneCallback(index: number, oldValue: SizeOptions, newValue: SizeOptions): void {
-    this.galleryAttributeUpdates[index].gallery(this.calPositionByCount(index), newValue.width as number)
+    this.galleryAttributeUpdates[index].gallery(this.calProxyPositionByCount(index),
+      this.calPositionByDisPlayCountWithIndex(index), newValue.width as number)
   }
 
   transition: Callback<SwiperContentTransitionProxy, void> = (proxy: SwiperContentTransitionProxy) => {
     const position = this.calPositionByDisPlayCount(proxy.position)
     console.info(`=======================> index: ${proxy.index}  position: ${proxy.position} --  ${position} selectionIndex: ${proxy.selectedIndex}`)
-    this.galleryAttributeUpdates[proxy.index].gallery(position, proxy.mainAxisLength)
+    this.galleryAttributeUpdates[proxy.index].gallery(proxy.position, position, proxy.mainAxisLength)
   }
 }
-
 
 class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends AttributeUpdater<Attribute> {
   private readonly positionScaleOffset: number = 1
@@ -142,26 +147,26 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
 
   initializeModifier(instance: Attribute): void {
     this.isInit = true
-    this.innerGallery(instance, this.initPosition, 0)
+    // this.innerGallery(this.initPosition, this.initPosition, 0)
   }
 
-  gallery(position: number, mainAxisLength: number = this.mainAxisLength) {
+  gallery(proxyPosition: number, position: number, mainAxisLength: number = this.mainAxisLength) {
     this.mainAxisLength = mainAxisLength
-    this.innerGallery(this.attribute!!, position, mainAxisLength)
+    this.innerGallery(proxyPosition, position, mainAxisLength)
   }
 
-  private innerGallery(attribute: Attribute, position: number, mainAxisLength: number) {
-    if (!this.isInit) {
+  private innerGallery(proxyPosition: number, position: number, mainAxisLength: number) {
+    if (!this.isInit || this.attribute == null) {
       return
     }
-    attribute.zIndex(0 <= position && position <= 0.5 ? 1 : 0)
+    this.attribute.zIndex(0 <= position && position <= 0.5 ? 1 : 0)
     // 缩放
     let xScaleValue = this.calcScaleValue(position)
     let yScaleValue = this.calcScaleValue(position)
-    attribute.scale({ x: xScaleValue, y: yScaleValue })
+    this.attribute.scale({ x: xScaleValue, y: yScaleValue })
     // 平移
-    let translateValue = this.calcTranslateValue(position, mainAxisLength, xScaleValue)
-    attribute.translate({ x: translateValue })
+    let translateValue = this.calcTranslateValue(proxyPosition, position, mainAxisLength, xScaleValue)
+    this.attribute.translate({ x: translateValue })
   }
 
   /**
@@ -184,17 +189,18 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
   }
 
   /**
-   * 每一个item与左右两个item相连
+   * 每一个item首尾相连,再计算itemSpace
    * @param position
    * @param mainAxisLength
    * @param xScaleValue
    * @returns
    */
-  private calcTranslateValue(position: number, mainAxisLength: number, xScaleValue: number): number {
-    console.info(`===========> position: ${position} xScaleValue:${xScaleValue}`)
+  private calcTranslateValue(proxyPosition: number, position: number, mainAxisLength: number,
+    xScaleValue: number): number {
+    console.info(`===========>proxyPosition: ${proxyPosition} position: ${position} xScaleValue:${xScaleValue}`)
     const sign = -1 * Math.sign(position)
     // 当前缩放后的item左边与未缩放状态左边对齐
-    let translateValue = sign * mainAxisLength * (1 - xScaleValue) / 2 + position * this.itemSpace
+    let translateValue = sign * mainAxisLength * (1 - xScaleValue) / 2 + proxyPosition * this.itemSpace
     let indexScaleValue = 0.0
     const startIndex = Math.abs(position) - 1
     // 计算position前面所有item(从position等于0到当前position前一个)的偏移量总和
