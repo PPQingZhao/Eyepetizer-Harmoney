@@ -45,7 +45,7 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
     this.galleryAttributeUpdates.clear()
     for (let index = 0; index < this.galleryDataSource.totalCount(); index++) {
       this.galleryAttributeUpdates.add(
-        new GalleryAttributeUpdate(this.nextGalleryInfo, this.preGalleryInfo, this.itemSpace))
+        new GalleryAttributeUpdate(this.disPlayCount, this.nextGalleryInfo, this.preGalleryInfo, this.itemSpace))
     }
   }
 
@@ -53,27 +53,9 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
     this.onDataAdd(index)
   }
 
-  private calPositionByDisPlayCountWithIndex(index: number): number {
-    return this.calPositionByDisPlayCount(this.calProxyPositionByCount(index))
-  }
-
-  private calProxyPositionByCount(index: number): number {
-    let count = this.galleryDataSource.totalCount()
-    return index > count / 2 ? index - count : index
-  }
-
-  private calPositionByDisPlayCount(position: number) {
-    let pos = position
-    if (position > this.disPlayCount - 1) {
-      pos = position - (this.disPlayCount - 1)
-    } else if (position > 0) {
-      pos = 0
-    }
-    return pos
-  }
-
   onDataAdd(index: number): void {
-    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(this.nextGalleryInfo, this.preGalleryInfo,
+    this.galleryAttributeUpdates.insert(new GalleryAttributeUpdate(this.disPlayCount, this.nextGalleryInfo,
+      this.preGalleryInfo,
       this.itemSpace), index)
   }
 
@@ -95,8 +77,7 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
   onDataDelete(index: number): void {
     this.galleryAttributeUpdates.removeByIndex(index)
     for (let i = index; i < this.galleryAttributeUpdates.length; i++) {
-      this.galleryAttributeUpdates[i].gallery(this.calProxyPositionByCount(i),
-        this.calPositionByDisPlayCountWithIndex(i))
+      this.galleryAttributeUpdates[i].gallery(this.calProxyPositionByCount(i))
     }
   }
 
@@ -128,14 +109,17 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
   }
 
   onSizeChange(index: number, oldValue: SizeOptions, newValue: SizeOptions): void {
-    this.galleryAttributeUpdates[index].gallery(this.calProxyPositionByCount(index),
-      this.calPositionByDisPlayCountWithIndex(index), newValue.width as number)
+    this.galleryAttributeUpdates[index].gallery(this.calProxyPositionByCount(index), newValue.width as number)
+  }
+
+  private calProxyPositionByCount(index: number): number {
+    const count = this.galleryDataSource.totalCount()
+    return index > count / 2 ? index - count : index
   }
 
   transition: Callback<SwiperContentTransitionProxy, void> = (proxy: SwiperContentTransitionProxy) => {
-    const position = this.calPositionByDisPlayCount(proxy.position)
     // console.info(`=======================> index: ${proxy.index}  position: ${proxy.position} --  ${position} selectionIndex: ${proxy.selectedIndex}`)
-    this.galleryAttributeUpdates[proxy.index].gallery(proxy.position, position, proxy.mainAxisLength)
+    this.galleryAttributeUpdates[proxy.index].gallery(proxy.position, proxy.mainAxisLength)
   }
 }
 
@@ -146,9 +130,11 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
   private readonly itemSpace: number
   private readonly nextGalleryInfo: GalleryInfo
   private readonly preGalleryInfo: GalleryInfo
+  private readonly disPlayCount: number = 1
 
-  constructor(nextGalleryInfo: GalleryInfo, preGalleryInfo: GalleryInfo, itemSpace: number) {
+  constructor(displayCount: number, nextGalleryInfo: GalleryInfo, preGalleryInfo: GalleryInfo, itemSpace: number) {
     super()
+    this.disPlayCount = displayCount
     this.nextGalleryInfo = nextGalleryInfo
     this.preGalleryInfo = preGalleryInfo
     this.itemSpace = itemSpace
@@ -159,15 +145,16 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
     // this.innerGallery(this.initPosition, this.initPosition, 0)
   }
 
-  gallery(proxyPosition: number, position: number, mainAxisLength: number = this.mainAxisLength) {
+  gallery(proxyPosition: number, mainAxisLength: number = this.mainAxisLength) {
     this.mainAxisLength = mainAxisLength
-    this.innerGallery(proxyPosition, position, mainAxisLength)
+    this.innerGallery(proxyPosition, mainAxisLength)
   }
 
-  private innerGallery(proxyPosition: number, position: number, mainAxisLength: number) {
+  private innerGallery(proxyPosition: number, mainAxisLength: number) {
     if (!this.isInit || this.attribute == null) {
       return
     }
+    const position = this.calPositionByDisPlayCount(proxyPosition)
     this.attribute.zIndex(0 <= position && position <= 0.5 ? 1 : 0)
     // 缩放
     let xScaleValue = this.calcScaleValue(position)
@@ -215,9 +202,9 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
     // 1表示next条目进场  -1表示previous条目进场
     const sign = Math.sign(position)
     // 当前缩放后的item左边与未缩放状态左边对齐
-    let translateValue = -sign * mainAxisLength * (1 - xScaleValue) / 2
+    let translateValue = -sign * mainAxisLength * (1 - xScaleValue) * 0.5
     // 分割线
-    const itemSpace = proxyPosition * this.itemSpace
+    const itemSpace = (proxyPosition - (this.disPlayCount - 1) * 0.5) * this.itemSpace
     console.info(`proxyPosition:  ${proxyPosition} position: ${position} itemSpace:${itemSpace}   GalleryContentAnimatedTransition`)
 
     translateValue = translateValue + itemSpace
@@ -232,6 +219,16 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
     console.info(`position: ${position}  translateValue: ${translateValue}   GalleryContentAnimatedTransition`)
 
     return translateValue
+  }
+
+  private calPositionByDisPlayCount(proxyPosition: number) {
+    let pos = proxyPosition
+    if (proxyPosition > this.disPlayCount - 1) {
+      pos = proxyPosition - (this.disPlayCount - 1)
+    } else if (proxyPosition > 0) {
+      pos = 0
+    }
+    return pos
   }
 }
 
