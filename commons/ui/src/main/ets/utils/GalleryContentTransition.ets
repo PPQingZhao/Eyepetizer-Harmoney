@@ -9,23 +9,21 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
   private galleryDataSource: IDataSource
   private readonly disPlayCount: number
   private readonly itemSpace: number
-  private readonly nextGalleryMargin: number
-  private readonly preGalleryMargin: number
   private readonly nextGalleryInfo: GalleryInfo
   private readonly preGalleryInfo: GalleryInfo
 
   constructor(galleryDataSource: IDataSource,
     disPlayCount: number = 1,
     itemSpace: number = 0,
-    nextGalleryMargin: number,
-    preGalleryMargin: number,
     nextGalleryInfo: GalleryInfo = {
       positionScale: 1.0,
       positionScaleOffset: 1,
+      galleryMargin: 0
     },
     preGalleryInfo: GalleryInfo = {
       positionScale: 1.0,
       positionScaleOffset: 1,
+      galleryMargin: 0
     },
     timeout: number = 3000) {
     this.galleryDataSource = galleryDataSource
@@ -33,8 +31,6 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
     this.timeout = timeout
     this.disPlayCount = disPlayCount
     this.itemSpace = itemSpace
-    this.nextGalleryMargin = nextGalleryMargin
-    this.preGalleryMargin = preGalleryMargin
     this.nextGalleryInfo = nextGalleryInfo
     this.preGalleryInfo = preGalleryInfo
 
@@ -155,7 +151,7 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
       return
     }
     const position = this.calPositionByDisPlayCount(proxyPosition)
-    this.attribute.zIndex(0 <= position && position <= 0.5 ? 1 : 0)
+    this.attribute.zIndex(-0.5 <= position && position <= 0.5 ? 1 : 0)
     // 缩放
     let xScaleValue = this.calcScaleValue(position)
     let yScaleValue = this.calcScaleValue(position)
@@ -190,6 +186,17 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
     return scaleValue
   }
 
+  private calcGalleryMargin(position: number) {
+    const galleryInfo = this.getGalleryInfo(position)
+    let galleryMargin = 0
+    if (position < -1 || position > 1) {
+      galleryMargin = -Math.sign(position) * (galleryInfo.galleryMargin + this.itemSpace)
+    } else {
+      galleryMargin = -(galleryInfo.galleryMargin + this.itemSpace) * position
+    }
+    return galleryMargin
+  }
+
   /**
    * 每一个item首尾相连,再计算itemSpace
    * @param position
@@ -205,9 +212,11 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
     let translateValue = -sign * mainAxisLength * (1 - xScaleValue) * 0.5
     // 分割线
     const itemSpace = (proxyPosition - (this.disPlayCount - 1) * 0.5) * this.itemSpace
-    console.info(`proxyPosition:  ${proxyPosition} position: ${position} itemSpace:${itemSpace}   GalleryContentAnimatedTransition`)
-
     translateValue = translateValue + itemSpace
+    // gallery margin
+    const galleryMargin = this.calcGalleryMargin(position)
+    // console.info(`proxyPosition:  ${proxyPosition} position: ${position} galleryMargin:${galleryMargin}   GalleryContentAnimatedTransition`)
+    translateValue = translateValue + galleryMargin
     let indexScaleValue = 0.0
     const startIndex = Math.abs(position) - 1
     // 计算position前面所有item(从position等于0到当前position前一个)的偏移量总和
@@ -216,7 +225,7 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
       translateValue = translateValue + (-sign * (mainAxisLength) * (1 - indexScaleValue))
       // console.info(`index: ${index}  indexScaleValue: ${indexScaleValue} translateValue: ${translateValue}`)
     }
-    console.info(`position: ${position}  translateValue: ${translateValue}   GalleryContentAnimatedTransition`)
+    // console.info(`position: ${position}  translateValue: ${translateValue}   GalleryContentAnimatedTransition`)
 
     return translateValue
   }
@@ -235,4 +244,5 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
 export interface GalleryInfo {
   positionScale: number
   positionScaleOffset: number,
+  galleryMargin: number,
 }

@@ -19,16 +19,16 @@ export struct GallerySwiper {
   @Once @Param itemSpace: number = 0
   @Once @Param nextMargin: number = 0
   @Once @Param preMargin: number = 0
-  @Once @Param preGalleryMargin: number = 0
-  @Once @Param nextGalleryMargin: number = 0
   @Once @Param indicatorController: IndicatorComponentController = new IndicatorComponentController()
   @Once @Param nextGalleryInfo: GalleryInfo = {
     positionScale: 1.0,
     positionScaleOffset: 1,
+    galleryMargin: 0
   }
   @Once @Param preGalleryInfo: GalleryInfo = {
     positionScale: 1.0,
     positionScaleOffset: 1,
+    galleryMargin: 0
   }
   private controller: SwiperController = new SwiperController()
   private galleryTransition =
@@ -36,8 +36,6 @@ export struct GallerySwiper {
       this.galleryDataSource,
       this.disPlayCount,
       this.itemSpace,
-      this.nextGalleryMargin,
-      this.preGalleryMargin,
       this.nextGalleryInfo,
       this.preGalleryInfo)
 
