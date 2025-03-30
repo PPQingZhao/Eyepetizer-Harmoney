@@ -56,9 +56,9 @@ export struct GallerySwiper {
     .displayCount(this.disPlayCount)
     .nextMargin(this.nextMargin)
     .prevMargin(this.preMargin)
-    .indicator(false)
-    .cachedCount(1, true)
     .indicator(this.indicatorController)
+    .cachedCount(this.disPlayCount,true)
+    .loop(true)
     .customContentTransition(this.galleryTransition)
   }
 }

@@ -1,5 +1,6 @@
 import { GallerySwiper } from 'ui/src/main/ets/components/Gallery'
 import { SimpleDataSource } from 'ui/src/main/ets/utils/DataSource'
+import { LengthMetrics } from '@kit.ArkUI'
 
 @ObservedV2
 export class MetroSwiperItemViewModel {
@@ -20,35 +21,44 @@ export struct MetroSwiperItemView {
 
   @Builder
   galleryItem(index: number) {
-    Text(index.toString() + '      ' + this.viewModel.dataSource.getData(index))
-      .textAlign(TextAlign.Center)
-      .backgroundColor(index % 2 == 0 ? Color.Red : Color.Blue)
-      .width('100%')
-      .height('auto')
-      .aspectRatio(16 / 9)
-      .onClick(() => {
-        // this.viewModel.dataSource.delete(index)
-        // this.viewModel.dataSource.push('sss')
-      })
+    Stack() {
+      Text(index.toString())
+        .textAlign(TextAlign.Start)
+        .backgroundColor(index % 2 == 0 ? Color.Red : Color.Blue)
+        .width('100%')
+        .height('auto')
+        .border({ color: index % 2 == 0 ? Color.Red : Color.Blue })
+        .borderWidth(2)
+        .padding({ start: LengthMetrics.px(20) })
+        .aspectRatio(16 / 9)
+      Text(index.toString())
+        .textAlign(TextAlign.End)
+        .padding({ end: LengthMetrics.px(20) })
+        .border({ color: index % 2 == 0 ? Color.Red : Color.Blue })
+        .borderWidth(2)
+        .width('100%')
+        .height('auto')
+        .aspectRatio(16 / 9)
+    }
   }
 
   build() {
     Column() {
       GallerySwiper({
         galleryDataSource: this.viewModel.dataSource,
-        disPlayCount: 1,
-        itemSpace: 20,
-        nextMargin: 60,
-        preMargin: 60,
+        disPlayCount: 2,
+        itemSpace: 10,
+        nextMargin: 80,
+        preMargin: 80,
         nextGalleryInfo: {
-          positionScale: 0.85,
+          positionScale: 0.8,
           positionScaleOffset: 1,
-          galleryMargin: 30
+          galleryMargin: 0
         },
         preGalleryInfo: {
-          positionScale: 0.85,
+          positionScale: 0.8,
           positionScaleOffset: 1,
-          galleryMargin: 30
+          galleryMargin: 0
         },
         indicatorController: this.indicatorController,
         swiperItemBuilder: (index) => {

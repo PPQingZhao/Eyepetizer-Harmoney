@@ -114,7 +114,7 @@ implements SwiperContentAnimatedTransition, DataChangeListener, OnGalleryItemSiz
   }
 
   transition: Callback<SwiperContentTransitionProxy, void> = (proxy: SwiperContentTransitionProxy) => {
-    // console.info(`=======================> index: ${proxy.index}  position: ${proxy.position} --  ${position} selectionIndex: ${proxy.selectedIndex}`)
+    console.info(` index: ${proxy.index}  position: ${proxy.position}  selectionIndex: ${proxy.selectedIndex}   GalleryContentAnimatedTransition`)
     this.galleryAttributeUpdates[proxy.index].gallery(proxy.position, proxy.mainAxisLength)
   }
 }
@@ -188,6 +188,9 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
 
   private calcGalleryMargin(position: number) {
     const galleryInfo = this.getGalleryInfo(position)
+    if (galleryInfo.galleryMargin <= 0) {
+      return 0
+    }
     let galleryMargin = 0
     if (position < -1 || position > 1) {
       galleryMargin = -Math.sign(position) * (galleryInfo.galleryMargin + this.itemSpace)
@@ -215,7 +218,7 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
     translateValue = translateValue + itemSpace
     // gallery margin
     const galleryMargin = this.calcGalleryMargin(position)
-    // console.info(`proxyPosition:  ${proxyPosition} position: ${position} galleryMargin:${galleryMargin}   GalleryContentAnimatedTransition`)
+    console.info(`proxyPosition:  ${proxyPosition} -- ${position}  itemSpace: ${itemSpace} galleryMargin:${galleryMargin}   GalleryContentAnimatedTransition`)
     translateValue = translateValue + galleryMargin
     let indexScaleValue = 0.0
     const startIndex = Math.abs(position) - 1
@@ -225,7 +228,7 @@ class GalleryAttributeUpdate<Attribute extends CommonMethod<Attribute>> extends 
       translateValue = translateValue + (-sign * (mainAxisLength) * (1 - indexScaleValue))
       // console.info(`index: ${index}  indexScaleValue: ${indexScaleValue} translateValue: ${translateValue}`)
     }
-    // console.info(`position: ${position}  translateValue: ${translateValue}   GalleryContentAnimatedTransition`)
+    // console.info(`proxyPosition:${proxyPosition}  position: ${position}  translateValue: ${translateValue}   GalleryContentAnimatedTransition`)
 
     return translateValue
   }
